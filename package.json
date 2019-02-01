@@ -1,0 +1,53 @@
+{
+  "name": "@terrestris/legend-util",
+  "version": "0.0.1",
+  "description": "A set of helper classes to render legends.",
+  "main": "src/index.js",
+  "scripts": {
+    "release": "np --no-yarn && git push git@github.com:terrestris/legend-util.git master --tags",
+    "lint": "eslint --ext js src/",
+    "test": "jest --maxWorkers=4",
+    "test:watch": "jest --watchAll",
+    "coveralls": "cat coverage/lcov.info | coveralls",
+    "clean:dist": "rimraf ./dist/*",
+    "build:dist": "npm run clean:dist && webpack",
+    "build:dev": "npm run clean:dist && webpack --mode=development",
+    "start:dev": "npm run clean:dist && webpack --mode=development --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terrestris/legend-util.git"
+  },
+  "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/terrestris/legend-util/issues"
+  },
+  "homepage": "https://github.com/terrestris/legend-util#readme",
+  "dependencies": {},
+  "peerDependencies": {
+    "d3": "~5"
+  },
+  "devDependencies": {
+    "@babel/core": "7.2.2",
+    "@babel/plugin-proposal-class-properties": "7.3.0",
+    "@babel/plugin-proposal-function-bind": "7.2.0",
+    "@babel/polyfill": "7.2.5",
+    "@babel/preset-env": "7.3.1",
+    "babel-eslint": "10.0.1",
+    "babel-jest": "23.6.0",
+    "babel-loader": "8.0.5",
+    "babel-plugin-dynamic-import-node": "2.2.0",
+    "babel-plugin-import": "1.11.0",
+    "coveralls": "3.0.2",
+    "d3": "5.8.0",
+    "eslint": "5.12.1",
+    "geostyler-openlayers-parser": "1.0.0",
+    "jest": "23.6.0",
+    "np": "4.0.2",
+    "ol": "5.3.0",
+    "rimraf": "2.6.3",
+    "webpack": "4.29.0",
+    "webpack-cli": "3.2.0"
+  }
+}
