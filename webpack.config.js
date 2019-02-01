@@ -36,9 +36,10 @@ module.exports = {
     }]
   },
   output: {
-    library: 'D3Util'
+    library: 'LegendUtil'
   },
   externals: {
-    moment: 'moment'
+    ol: 'ol',
+    d3: 'd3'
   }
 };

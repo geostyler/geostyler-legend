@@ -12,12 +12,12 @@ import OlFeature from 'ol/Feature';
 
 import OlStyleParser from 'geostyler-openlayers-parser';
 
+const iconSize = [45, 30];
+
 /**
  * A class that can be used to render svg legends.
  */
 class LegendRenderer {
-
-  iconSize = [45, 30];
 
   /**
    * Constructs a new legend renderer.
@@ -60,8 +60,8 @@ class LegendRenderer {
         container.append('image')
           .attr('x', position[0])
           .attr('y', position[1])
-          .attr('width', this.iconSize[0])
-          .attr('height', this.iconSize[1])
+          .attr('width', iconSize[0])
+          .attr('height', iconSize[1])
           .attr('xlink:href', uri);
       });
     }
@@ -77,21 +77,21 @@ class LegendRenderer {
       case 'Mark':
       case 'Icon':
       case 'Text':
-        return new OlGeomPoint([this.iconSize[0] / 2, this.iconSize[1] / 2]);
+        return new OlGeomPoint([iconSize[0] / 2, iconSize[1] / 2]);
       case 'Fill':
         return new OlGeomPolygon([[
-          [0, 0], [this.iconSize[0], 0], [this.iconSize[0], this.iconSize[1]],
-          [0, this.iconSize[1]], [0, 0]
+          [0, 0], [iconSize[0], 0], [iconSize[0], iconSize[1]],
+          [0, iconSize[1]], [0, 0]
         ]]);
       case 'Line':
         return new OlGeomLineString([
-          [this.iconSize[0] / 6, this.iconSize[1] / 6],
-          [this.iconSize[0] / 3, this.iconSize[1] / 3 * 2],
-          [this.iconSize[0] / 2, this.iconSize[1] / 3],
-          [this.iconSize[0] / 6 * 5, this.iconSize[1] / 6 * 5]
+          [iconSize[0] / 6, iconSize[1] / 6],
+          [iconSize[0] / 3, iconSize[1] / 3 * 2],
+          [iconSize[0] / 2, iconSize[1] / 3],
+          [iconSize[0] / 6 * 5, iconSize[1] / 6 * 5]
         ]);
       default:
-        return new OlGeomPoint([this.iconSize[0] / 2, this.iconSize[1] / 2]);
+        return new OlGeomPoint([iconSize[0] / 2, iconSize[1] / 2]);
     }
   }
 
@@ -111,7 +111,7 @@ class LegendRenderer {
       interactions: [],
       target: div,
       view: new OlView({
-        extent: boundingExtent([[0, 0], this.iconSize])
+        extent: boundingExtent([[0, 0], iconSize])
       })
     });
     rule.symbolizers.forEach(symbolizer => {
