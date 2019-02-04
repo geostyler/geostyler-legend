@@ -55,9 +55,11 @@ class LegendRenderer {
    */
   renderLegendItem(container, item, position) {
     if (item.rule) {
+      container = container.append('g')
+        .attr('class', 'legend-item')
+        .attr('title', item.title);
       const img = this.getRuleIcon(item.rule);
-      img.then(uri => {
-        container = container.append('g');
+      return img.then(uri => {
         container.append('rect')
           .attr('x', position[0] + 1)
           .attr('y', position[1])
@@ -76,8 +78,38 @@ class LegendRenderer {
           .attr('x', position[0] + iconSize[0] + 5)
           .attr('y', position[1] + 20);
         position[1] += iconSize[1] + 5;
+        if (position[1] + iconSize[1] + 5 >= this.config.maxColumnHeight) {
+          position[1] = 5;
+          position[0] += this.config.maxColumnWidth;
+        }
       });
     }
+  }
+
+  /**
+   * Shortens the labels if they overflow.
+   * @param {d3.selection} nodes the legend item group nodes
+   * @param {Number} maxWidth the maximum column width
+   */
+  shortenLabels(nodes, maxWidth) {
+    nodes.each(function() {
+      const node = select(this);
+      const text = node.select('text');
+      let width = node.node().getBoundingClientRect().width;
+      let adapted = false;
+      while (width > maxWidth) {
+        let str = text.text();
+        str = str.substring(0, str.length - 1);
+        text.text(str);
+        width = node.node().getBoundingClientRect().width;
+        adapted = true;
+      }
+      if (adapted) {
+        let str = text.text();
+        str = str.substring(0, str.length - 3);
+        text.text(str + '...');
+      }
+    });
   }
 
   /**
@@ -93,8 +125,8 @@ class LegendRenderer {
         return new OlGeomPoint([iconSize[0] / 2, iconSize[1] / 2]);
       case 'Fill':
         return new OlGeomPolygon([[
-          [0, 0], [iconSize[0], 0], [iconSize[0], iconSize[1]],
-          [0, iconSize[1]], [0, 0]
+          [3, 3], [iconSize[0] - 3, 3], [iconSize[0] - 3, iconSize[1] - 3],
+          [3, iconSize[1] - 3], [3, 3]
         ]]);
       case 'Line':
         return new OlGeomLineString([
@@ -126,10 +158,10 @@ class LegendRenderer {
       interactions: [],
       target: div,
       view: new OlView({
-        extent: boundingExtent([[0, 0], iconSize])
+        extent: boundingExtent([[0, 0], [iconSize[0], iconSize[1]]])
       })
     });
-    map.getView().fit([0, 0, 46, 30]);
+    map.getView().fit([0, 0, iconSize[0], iconSize[1]]);
     rule.symbolizers.forEach(symbolizer => {
       layer.getSource().addFeature(new OlFeature({
         geometry: this.getGeometryForSymbolizer(symbolizer)
@@ -147,8 +179,8 @@ class LegendRenderer {
         .then((olStyles) => {
           layer.setStyle(olStyles);
           map.on('rendercomplete', () => {
-            resolve(div.querySelector('canvas').toDataURL('image/png'));
             div.remove();
+            resolve(div.querySelector('canvas').toDataURL('image/png'));
           });
         })
         .catch(() => {
@@ -165,15 +197,25 @@ class LegendRenderer {
    */
   renderLegend(config, svg, position) {
     const container = svg.append('g');
+    if (this.config.overflow !== 'auto' && position[0] !== 0) {
+      const legendHeight = config.items.length * (iconSize[1] + 5) + 20;
+      if (legendHeight + position[1] > this.config.maxColumnHeight) {
+        position[0] += this.config.maxColumnWidth;
+        position[1] = 0;
+      }
+    }
     if (config.title) {
       container.append('text')
         .text(config.title)
         .attr('text-anchor', 'start')
         .attr('dy', position[1] + 10)
         .attr('dx', position[0]);
+      position[1] += 20;
     }
-    position[1] += 20;
-    config.items.forEach(item => this.renderLegendItem(svg, item, position));
+
+    return config.items.reduce((cur, item) => {
+      return cur.then(() => this.renderLegendItem(svg, item, position));
+    }, Promise.resolve());
   }
 
   /**
@@ -202,7 +244,15 @@ class LegendRenderer {
       .attr('height', height);
 
     const position = [0, 0];
-    legends.forEach(legend => this.renderLegend(legend, svg, position));
+
+    const promise = legends.reduce((cur, legend) => {
+      return cur.then(() => this.renderLegend(legend, svg, position));
+    }, Promise.resolve());
+    promise.then(() => {
+      const nodes = svg.selectAll('g.legend-item');
+      this.shortenLabels(nodes, this.config.maxColumnWidth);
+    });
+
     return svg.node();
   }
 
