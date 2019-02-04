@@ -48,28 +48,41 @@ class LegendRenderer {
   }
 
   /**
-   *
-   * @param {*} item
-   * @param {*} position
+   * Renders a single legend item.
+   * @param {d3.selection} container the container to append the legend item to
+   * @param {Object} item configuration of the legend item
+   * @param {Number[]} position the current position
    */
   renderLegendItem(container, item, position) {
     if (item.rule) {
       const img = this.getRuleIcon(item.rule);
-      // TODO image seems to have zero height
       img.then(uri => {
-        container.append('image')
-          .attr('x', position[0])
+        container = container.append('g');
+        container.append('rect')
+          .attr('x', position[0] + 1)
           .attr('y', position[1])
           .attr('width', iconSize[0])
           .attr('height', iconSize[1])
-          .attr('xlink:href', uri);
+          .style('fill-opacity', 0)
+          .style('stroke', 'black');
+        container.append('image')
+          .attr('x', position[0] + 1)
+          .attr('y', position[1])
+          .attr('width', iconSize[0])
+          .attr('height', iconSize[1])
+          .attr('href', uri);
+        container.append('text')
+          .text(item.title)
+          .attr('x', position[0] + iconSize[0] + 5)
+          .attr('y', position[1] + 20);
+        position[1] += iconSize[1] + 5;
       });
     }
   }
 
   /**
-   *
-   * @param {*} symbolizer
+   * Constructs a geometry for rendering a specific symbolizer.
+   * @param {Object} symbolizer the symbolizer object
    */
   getGeometryForSymbolizer(symbolizer) {
     const kind = symbolizer.kind;
@@ -96,16 +109,18 @@ class LegendRenderer {
   }
 
   /**
-   *
-   * @param {*} rule
+   * Returns a promise resolving to a data uri with the appropriate rule icon.
+   * @param {Object} rule the geostyler rule
    */
   getRuleIcon(rule) {
     const layer = new OlLayerVector({
       source: new OlSourceVector()
     });
-    // TODO this way the map canvas has display: none
     const div = document.createElement('div');
-    new OlMap({
+    document.body.append(div);
+    div.style.width = `${iconSize[0]}px`;
+    div.style.height = `${iconSize[1]}px`;
+    const map = new OlMap({
       layers: [layer],
       controls: [],
       interactions: [],
@@ -114,6 +129,7 @@ class LegendRenderer {
         extent: boundingExtent([[0, 0], iconSize])
       })
     });
+    map.getView().fit([0, 0, 46, 30]);
     rule.symbolizers.forEach(symbolizer => {
       layer.getSource().addFeature(new OlFeature({
         geometry: this.getGeometryForSymbolizer(symbolizer)
@@ -130,8 +146,10 @@ class LegendRenderer {
       styleParser.writeStyle(style)
         .then((olStyles) => {
           layer.setStyle(olStyles);
-          // TODO image is empty, force render of the map somehow?
-          resolve(div.querySelector('canvas').toDataURL('image/png'));
+          map.on('rendercomplete', () => {
+            resolve(div.querySelector('canvas').toDataURL('image/png'));
+            div.remove();
+          });
         })
         .catch(() => {
           reject();
@@ -151,17 +169,18 @@ class LegendRenderer {
       container.append('text')
         .text(config.title)
         .attr('text-anchor', 'start')
-        .attr('dy', position[1])
-        .attr('dx', position[0] + 25);
+        .attr('dy', position[1] + 10)
+        .attr('dx', position[0]);
     }
     position[1] += 20;
-    config.items.forEach(item => this.renderLegendItem(container, item, position));
+    config.items.forEach(item => this.renderLegendItem(svg, item, position));
   }
 
   /**
    * Renders the configured legend.
+   * @param {HTMLElement} parent a node to append the svg to
    */
-  render() {
+  render(parent) {
     const {
       styles,
       configs,
@@ -174,8 +193,14 @@ class LegendRenderer {
     if (configs) {
       legends.unshift.apply(legends, configs);
     }
-    let svg = document.createElement('svg');
-    svg = select(svg).attr('viewBox', `0 0 ${width} ${height}`);
+    const svg = select(parent)
+      .append('svg')
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('top', 0)
+      .attr('left', 0)
+      .attr('width', width)
+      .attr('height', height);
+
     const position = [0, 0];
     legends.forEach(legend => this.renderLegend(legend, svg, position));
     return svg.node();
