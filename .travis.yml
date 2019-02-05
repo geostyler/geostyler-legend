@@ -1,11 +1,16 @@
 language: node_js
 node_js:
-- "8"
-- "10"
+  - "8"
+  - "10"
+before_install:
+  - sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+addons:
+  apt:
+    update: true
 script:
-- npm run test
+  - npm run test
 after_success:
-- npm run-script coveralls
+  - npm run-script coveralls
 cache:
   directories:
-  - node-modules
+    - node-modules
