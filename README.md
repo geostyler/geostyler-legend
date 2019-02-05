@@ -27,6 +27,9 @@ In order to render a legend, you construct a legend renderer like this:
       renderer.render(someElement);
 ```
 
+The `styles` property can contain a list of geostyler style objects that
+each correspond to one legend rendered.
+
 There are currently three modes. If constructed as above, the renderer will
 render multiple columns if needed, with a maximum width and height as specified.
 The columns will break on any legend element.
