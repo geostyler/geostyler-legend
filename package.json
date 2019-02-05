@@ -1,6 +1,6 @@
 {
   "name": "@terrestris/legend-util",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A set of helper classes to render legends.",
   "main": "src/index.js",
   "scripts": {
