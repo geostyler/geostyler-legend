@@ -78,7 +78,7 @@ class LegendRenderer {
           .attr('x', position[0] + iconSize[0] + 5)
           .attr('y', position[1] + 20);
         position[1] += iconSize[1] + 5;
-        if (position[1] + iconSize[1] + 5 >= this.config.maxColumnHeight) {
+        if (this.config.maxColumnHeight && position[1] + iconSize[1] + 5 >= this.config.maxColumnHeight) {
           position[1] = 5;
           position[0] += this.config.maxColumnWidth;
         }
@@ -251,6 +251,11 @@ class LegendRenderer {
     promise.then(() => {
       const nodes = svg.selectAll('g.legend-item');
       this.shortenLabels(nodes, this.config.maxColumnWidth);
+      if (!this.config.maxColumnHeight) {
+        svg
+          .attr('viewBox', `0 0 ${width} ${position[1]}`)
+          .attr('height', position[1]);
+      }
     });
 
     return svg.node();
