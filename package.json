@@ -39,7 +39,7 @@
     "babel-loader": "8.0.5",
     "babel-plugin-dynamic-import-node": "2.2.0",
     "babel-plugin-import": "1.11.0",
-    "canvas": "2.3.1",
+    "canvas": "2.0.0-alpha.1",
     "coveralls": "3.0.2",
     "d3": "5.8.2",
     "eslint": "5.13.0",
