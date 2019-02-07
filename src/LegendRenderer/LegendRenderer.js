@@ -1,14 +1,11 @@
 import select from 'd3-selection/src/select';
 
-import OlMap from 'ol/Map';
-import OlView from 'ol/View';
-import OlLayerVector from 'ol/layer/Vector';
-import OlSourceVector from 'ol/source/Vector';
 import {boundingExtent} from 'ol/extent';
 import OlGeomPoint from 'ol/geom/Point';
 import OlGeomPolygon from 'ol/geom/Polygon';
 import OlGeomLineString from 'ol/geom/LineString';
-import OlFeature from 'ol/Feature';
+import Renderer from 'ol/render/canvas/Immediate';
+import {create as createTransform} from 'ol/transform';
 
 import OlStyleParser from 'geostyler-openlayers-parser';
 
@@ -145,28 +142,17 @@ class LegendRenderer {
    * @param {Object} rule the geostyler rule
    */
   getRuleIcon(rule) {
-    const layer = new OlLayerVector({
-      source: new OlSourceVector()
-    });
-    const div = document.createElement('div');
-    document.body.append(div);
-    div.style.width = `${iconSize[0]}px`;
-    div.style.height = `${iconSize[1]}px`;
-    const map = new OlMap({
-      layers: [layer],
-      controls: [],
-      interactions: [],
-      target: div,
-      view: new OlView({
-        extent: boundingExtent([[0, 0], [iconSize[0], iconSize[1]]])
-      })
-    });
-    map.getView().fit([0, 0, iconSize[0], iconSize[1]]);
-    rule.symbolizers.forEach(symbolizer => {
-      layer.getSource().addFeature(new OlFeature({
-        geometry: this.getGeometryForSymbolizer(symbolizer)
-      }));
-    });
+    const canvas = document.createElement('canvas');
+    canvas.setAttribute('width', iconSize[0]);
+    canvas.setAttribute('height', iconSize[1]);
+    const extent = boundingExtent([[0, 0], [iconSize[0], iconSize[1]]]);
+    const pixelRatio = 1;
+    const context = canvas.getContext('2d');
+    const transform = createTransform();
+    const renderer = new Renderer(context, pixelRatio, extent, transform, 0);
+    const geoms = [];
+    rule.symbolizers.forEach(symbolizer => geoms.push(this.getGeometryForSymbolizer(symbolizer)));
+
     const styleParser = new OlStyleParser();
 
     const style = {
@@ -176,12 +162,10 @@ class LegendRenderer {
     };
     const promise = new Promise((resolve, reject) => {
       styleParser.writeStyle(style)
-        .then((olStyles) => {
-          layer.setStyle(olStyles);
-          map.on('rendercomplete', () => {
-            div.remove();
-            resolve(div.querySelector('canvas').toDataURL('image/png'));
-          });
+        .then((olStyle) => {
+          renderer.setStyle(olStyle);
+          geoms.forEach(geom => renderer.drawGeometry(geom));
+          resolve(canvas.toDataURL('image/png'));
         })
         .catch(() => {
           reject();
