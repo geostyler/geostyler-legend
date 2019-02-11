@@ -23,7 +23,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "index.d.ts"
+    "oltypes.d.ts"
   ],
   "exclude": [
     "node_modules",
