@@ -1,6 +1,7 @@
 module.exports = {
   moduleFileExtensions: [
-    'js'
+    'js',
+    'ts'
   ],
   moduleDirectories: [
     'node_modules'
@@ -10,7 +11,11 @@ module.exports = {
   ],
   collectCoverage: true,
   collectCoverageFrom: [
-    'src/**/*.js'
+    'src/**/*.ts'
   ],
+  transform: {
+    '\\.(js)$': '<rootDir>/node_modules/babel-jest',
+    '\\.(ts)$': 'ts-jest'
+  },
   coverageDirectory: '<rootDir>/coverage'
 };
