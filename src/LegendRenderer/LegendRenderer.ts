@@ -115,6 +115,7 @@ class LegendRenderer {
         }
       });
     }
+    return undefined;
   }
 
   /**
