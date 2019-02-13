@@ -44,7 +44,7 @@
     "babel-plugin-import": "1.11.0",
     "canvas": "2.0.0-alpha.1",
     "coveralls": "3.0.2",
-    "d3": "5.8.2",
+    "d3": "5.9.0",
     "eslint": "5.13.0",
     "geostyler": "^3.0.0",
     "geostyler-openlayers-parser": "1.0.0",
