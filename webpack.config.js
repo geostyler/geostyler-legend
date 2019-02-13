@@ -1,7 +1,7 @@
 module.exports = {
   module: {
     rules: [{
-      test: /\.jsx?$/,
+      test: /\.[jt]sx?$/,
       exclude: /node_modules\/(?!@terrestris)/,
       use: 'babel-loader'
     }, {
