@@ -58,7 +58,7 @@
     "tslint": "5.12.1",
     "typedoc": "0.14.2",
     "typescript": "3.3.3",
-    "webpack": "4.29.4",
+    "webpack": "4.29.5",
     "webpack-cli": "3.2.3"
   }
 }
