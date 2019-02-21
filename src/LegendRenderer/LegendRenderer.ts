@@ -249,8 +249,9 @@ class LegendRenderer {
   /**
    * Renders the configured legend.
    * @param {HTMLElement} parent a node to append the svg to
+   * @return {Promise<void>} a promise resolving once the legend has finished rendering
    */
-  render(parent: HTMLElement) {
+  render(parent: HTMLElement): Promise<void> {
     const {
       styles,
       configs,
@@ -276,7 +277,7 @@ class LegendRenderer {
     const promise = legends.reduce((cur, legend) => {
       return cur.then(() => this.renderLegend(legend, svg, position));
     }, Promise.resolve());
-    promise.then(() => {
+    return promise.then(() => {
       const nodes = svg.selectAll('g.legend-item');
       this.shortenLabels(nodes, this.config.maxColumnWidth);
       if (!this.config.maxColumnHeight) {
@@ -285,8 +286,6 @@ class LegendRenderer {
           .attr('height', position[1]);
       }
     });
-
-    return svg.node();
   }
 
 }
