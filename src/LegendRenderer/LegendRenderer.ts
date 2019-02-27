@@ -245,8 +245,9 @@ class LegendRenderer {
     if (config.title) {
       container.append('text')
         .text(config.title)
+        .attr('class', 'legend-title')
         .attr('text-anchor', 'start')
-        .attr('dy', position[1] + 10)
+        .attr('dy', '1em')
         .attr('dx', position[0]);
       position[1] += 20;
     }
