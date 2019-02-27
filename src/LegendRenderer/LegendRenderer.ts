@@ -10,7 +10,7 @@ import {
   Style,
   Symbolizer,
   Rule
- } from 'geostyler-style';
+} from 'geostyler-style';
 
 import OlStyleParser from 'geostyler-openlayers-parser';
 
@@ -34,6 +34,7 @@ interface LegendsConfiguration {
   maxColumnHeight?: number;
   maxColumnWidth?: number;
   overflow?: 'auto' | 'group';
+  hideRect?: boolean;
 }
 
 const iconSize = [45, 30];
@@ -85,19 +86,28 @@ class LegendRenderer {
     item: LegendItemConfiguration,
     position: [number, number]
   ) {
+
+    const {
+      hideRect,
+      maxColumnHeight,
+      maxColumnWidth
+    } = this.config;
+
     if (item.rule) {
       container = container.append('g')
         .attr('class', 'legend-item')
         .attr('title', item.title);
       const img = this.getRuleIcon(item.rule);
       return img.then((uri: string) => {
-        container.append('rect')
-          .attr('x', position[0] + 1)
-          .attr('y', position[1])
-          .attr('width', iconSize[0])
-          .attr('height', iconSize[1])
-          .style('fill-opacity', 0)
-          .style('stroke', 'black');
+        if (!hideRect) {
+          container.append('rect')
+            .attr('x', position[0] + 1)
+            .attr('y', position[1])
+            .attr('width', iconSize[0])
+            .attr('height', iconSize[1])
+            .style('fill-opacity', 0)
+            .style('stroke', 'black');
+        }
         container.append('image')
           .attr('x', position[0] + 1)
           .attr('y', position[1])
@@ -109,9 +119,9 @@ class LegendRenderer {
           .attr('x', position[0] + iconSize[0] + 5)
           .attr('y', position[1] + 20);
         position[1] += iconSize[1] + 5;
-        if (this.config.maxColumnHeight && position[1] + iconSize[1] + 5 >= this.config.maxColumnHeight) {
+        if (maxColumnHeight && position[1] + iconSize[1] + 5 >= maxColumnHeight) {
           position[1] = 5;
-          position[0] += this.config.maxColumnWidth;
+          position[0] += maxColumnWidth;
         }
       });
     }
@@ -235,8 +245,9 @@ class LegendRenderer {
     if (config.title) {
       container.append('text')
         .text(config.title)
+        .attr('class', 'legend-title')
         .attr('text-anchor', 'start')
-        .attr('dy', position[1] + 10)
+        .attr('dy', '1em')
         .attr('dx', position[0]);
       position[1] += 20;
     }

@@ -2,7 +2,8 @@
   "name": "@terrestris/legend-util",
   "version": "0.0.2",
   "description": "A set of helper classes to render legends.",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "release": "np --no-yarn && git push git@github.com:terrestris/legend-util.git master --tags",
     "lint": "tslint --project tsconfig.json --config tslint.json && tsc --noEmit --project tsconfig.json",
@@ -28,7 +29,6 @@
   "peerDependencies": {
     "d3": "~5"
   },
-  "types": "dist/index.d.ts",
   "devDependencies": {
     "@babel/core": "7.3.4",
     "@babel/plugin-proposal-class-properties": "7.3.4",
