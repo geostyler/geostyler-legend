@@ -50,7 +50,7 @@
     "geostyler-openlayers-parser": "1.1.0",
     "geostyler-style": "0.14.3",
     "jest": "24.1.0",
-    "jsdom": "13.2.0",
+    "jsdom": "14.0.0",
     "np": "4.0.2",
     "ol": "5.3.1",
     "rimraf": "2.6.3",
