@@ -46,7 +46,7 @@
     "coveralls": "3.0.3",
     "d3": "5.9.2",
     "eslint": "5.16.0",
-    "geostyler": "3.2.1",
+    "geostyler": "4.0.0",
     "geostyler-openlayers-parser": "1.1.1",
     "geostyler-style": "1.1.0",
     "jest": "24.1.0",
