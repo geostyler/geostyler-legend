@@ -30,11 +30,11 @@
     "d3": "~5"
   },
   "devDependencies": {
-    "@babel/core": "7.4.4",
+    "@babel/core": "7.4.5",
     "@babel/plugin-proposal-class-properties": "7.4.4",
     "@babel/plugin-proposal-function-bind": "7.2.0",
     "@babel/polyfill": "7.4.4",
-    "@babel/preset-env": "7.4.4",
+    "@babel/preset-env": "7.4.5",
     "@types/jest": "24.0.13",
     "@types/d3-selection": "1.4.1",
     "babel-eslint": "10.0.1",
