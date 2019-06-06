@@ -43,7 +43,7 @@
     "babel-plugin-dynamic-import-node": "2.2.0",
     "babel-plugin-import": "1.12.0",
     "canvas": "2.0.0-alpha.1",
-    "coveralls": "3.0.3",
+    "coveralls": "3.0.4",
     "d3": "5.9.2",
     "eslint": "5.16.0",
     "geostyler": "3.2.1",
