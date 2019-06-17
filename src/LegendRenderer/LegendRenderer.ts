@@ -205,7 +205,9 @@ class LegendRenderer {
     const styleParser = new OlStyleParser();
 
     const style = {
+      name: '',
       rules: [{
+        name: '',
         symbolizers: rule.symbolizers
       }]
     };
