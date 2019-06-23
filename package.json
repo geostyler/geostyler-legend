@@ -45,7 +45,7 @@
     "canvas": "2.0.0-alpha.1",
     "coveralls": "3.0.4",
     "d3": "5.9.2",
-    "eslint": "5.16.0",
+    "eslint": "6.0.0",
     "geostyler": "4.1.3",
     "geostyler-openlayers-parser": "1.1.3",
     "geostyler-style": "1.2.0",
