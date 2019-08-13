@@ -42,7 +42,7 @@
     "babel-loader": "^8",
     "babel-plugin-dynamic-import-node": "^2",
     "babel-plugin-import": "^1",
-    "canvas": "2.0.0-alpha.1",
+    "canvas": "2.6.0",
     "coveralls": "^3",
     "d3": "^5",
     "eslint": "^6",
