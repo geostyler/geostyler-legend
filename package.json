@@ -54,7 +54,7 @@
     "jsdom": "^15",
     "np": "^5",
     "ol": "^5",
-    "rimraf": "^2",
+    "rimraf": "^3.0.0",
     "ts-jest": "^24",
     "tslint": "^5",
     "typedoc": "^0",
