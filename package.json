@@ -48,7 +48,7 @@
     "eslint": "^6",
     "geostyler": "^4",
     "geostyler-openlayers-parser": "^1",
-    "geostyler-style": "^1",
+    "geostyler-style": "^2.0.0",
     "jest": "^24",
     "jest-canvas-mock": "^2.1.0",
     "jsdom": "^15",
