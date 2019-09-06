@@ -27,7 +27,7 @@
   "homepage": "https://github.com/terrestris/geostyler-legend#readme",
   "dependencies": {
     "@types/d3-selection": "^1",
-    "geostyler-style": "^2.0.0",
+    "geostyler-style": "^2.0.3",
     "geostyler-openlayers-parser": "^1.1.4"
   },
   "peerDependencies": {
