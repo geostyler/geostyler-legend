@@ -1,11 +1,11 @@
 {
-  "name": "@terrestris/legend-util",
+  "name": "geostyler-legend",
   "version": "0.1.0",
-  "description": "A set of helper classes to render legends.",
+  "description": "A simple legend component for geostyler-stlye.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "release": "np --no-yarn && git push git@github.com:terrestris/legend-util.git master --tags",
+    "release": "np --no-yarn && git push git@github.com:terrestris/geostyler-legend.git master --tags",
     "lint": "tslint --project tsconfig.json --config tslint.json && tsc --noEmit --project tsconfig.json",
     "test": "jest --maxWorkers=4",
     "test:watch": "jest --watchAll",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/terrestris/legend-util.git"
+    "url": "git+https://github.com/terrestris/geostyler-legend.git"
   },
   "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/terrestris/legend-util/issues"
+    "url": "https://github.com/terrestris/geostyler-legend/issues"
   },
-  "homepage": "https://github.com/terrestris/legend-util#readme",
+  "homepage": "https://github.com/terrestris/geostyler-legend#readme",
   "dependencies": {},
   "peerDependencies": {
     "d3": "^5"
@@ -42,13 +42,13 @@
     "babel-loader": "^8",
     "babel-plugin-dynamic-import-node": "^2",
     "babel-plugin-import": "^1",
-    "canvas": "2.0.0-alpha.1",
+    "canvas": "2.6.0",
     "coveralls": "^3",
     "d3": "^5",
     "eslint": "^6",
     "geostyler": "^4",
     "geostyler-openlayers-parser": "^1",
-    "geostyler-style": "^1",
+    "geostyler-style": "^2",
     "jest": "^24",
     "jest-canvas-mock": "^2.1.0",
     "jsdom": "^15",
