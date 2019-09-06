@@ -1,65 +1,67 @@
 {
-  "name": "@terrestris/legend-util",
+  "name": "geostyler-legend",
   "version": "0.1.0",
-  "description": "A set of helper classes to render legends.",
+  "description": "A simple legend component for geostyler-stlye.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "release": "np --no-yarn && git push git@github.com:terrestris/legend-util.git master --tags",
+    "release": "np --no-yarn && git push git@github.com:terrestris/geostyler-legend.git master --tags",
     "lint": "tslint --project tsconfig.json --config tslint.json && tsc --noEmit --project tsconfig.json",
     "test": "jest --maxWorkers=4",
     "test:watch": "jest --watchAll",
     "coveralls": "cat coverage/lcov.info | coveralls",
     "clean:dist": "rimraf ./dist/*",
-    "build:dist": "tsc -p ./tsconfig.prod.json",
-    "build:dev": "npm run clean:dist && webpack --mode=development",
-    "start:dev": "npm run clean:dist && webpack --mode=development --watch"
+    "prebuild": "npm run test",
+    "build": "tsc -p ./tsconfig.prod.json",
+    "start": "npm run clean:dist && webpack --mode=development --watch"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/terrestris/legend-util.git"
+    "url": "git+https://github.com/terrestris/geostyler-legend.git"
   },
   "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/terrestris/legend-util/issues"
+    "url": "https://github.com/terrestris/geostyler-legend/issues"
   },
-  "homepage": "https://github.com/terrestris/legend-util#readme",
-  "dependencies": {},
+  "homepage": "https://github.com/terrestris/geostyler-legend#readme",
+  "dependencies": {
+    "@types/d3-selection": "^1",
+    "geostyler-style": "^2.0.0",
+    "geostyler-openlayers-parser": "^1.1.4"
+  },
   "peerDependencies": {
-    "d3": "^5"
+    "d3": "^5",
+    "ol": "^5"
   },
   "devDependencies": {
-    "@babel/core": "^7",
-    "@babel/plugin-proposal-class-properties": "^7",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-proposal-function-bind": "^7",
     "@babel/polyfill": "^7",
-    "@babel/preset-env": "^7",
-    "@types/d3-selection": "^1",
-    "@types/jest": "^24",
-    "babel-eslint": "^10",
-    "babel-jest": "^24",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7",
+    "@types/jest": "^24.0.18",
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.9.0",
     "babel-loader": "^8",
     "babel-plugin-dynamic-import-node": "^2",
-    "babel-plugin-import": "^1",
-    "canvas": "2.0.0-alpha.1",
-    "coveralls": "^3",
-    "d3": "^5",
-    "eslint": "^6",
-    "geostyler": "^4",
-    "geostyler-openlayers-parser": "^1",
-    "geostyler-style": "^1",
-    "jest": "^24",
-    "jest-canvas-mock": "^2.1.0",
+    "babel-plugin-import": "^1.12.1",
+    "canvas": "2.6.0",
+    "coveralls": "^3.0.6",
+    "d3": "^5.11.0",
+    "eslint": "^6.3.0",
+    "geostyler": "^4.3.0",
+    "jest": "^24.9.0",
+    "jest-canvas-mock": "^2.1.1",
     "jsdom": "^15",
     "np": "^5",
     "ol": "^5",
     "rimraf": "^3.0.0",
-    "ts-jest": "^24",
-    "tslint": "^5",
-    "typedoc": "^0",
-    "typescript": "^3",
-    "webpack": "^4",
-    "webpack-cli": "^3"
+    "tslint": "^5.19.0",
+    "typedoc": "^0.15.0",
+    "typescript": "^3.6.2",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.8"
   }
 }
