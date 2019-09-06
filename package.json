@@ -25,7 +25,9 @@
     "url": "https://github.com/terrestris/geostyler-legend/issues"
   },
   "homepage": "https://github.com/terrestris/geostyler-legend#readme",
-  "dependencies": {},
+  "dependencies": {
+    "@types/d3-selection": "^1"
+  },
   "peerDependencies": {
     "d3": "^5"
   },
@@ -35,7 +37,7 @@
     "@babel/plugin-proposal-function-bind": "^7",
     "@babel/polyfill": "^7",
     "@babel/preset-env": "^7",
-    "@types/d3-selection": "^1",
+    "@babel/preset-typescript": "^7",
     "@types/jest": "^24",
     "babel-eslint": "^10",
     "babel-jest": "^24",
@@ -55,7 +57,6 @@
     "np": "^5",
     "ol": "^5",
     "rimraf": "^3.0.0",
-    "ts-jest": "^24",
     "tslint": "^5",
     "typedoc": "^0",
     "typescript": "^3",
