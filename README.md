@@ -4,7 +4,11 @@
 [![Build Status](https://travis-ci.com/terrestris/geostyler-legend.svg?branch=master)](https://travis-ci.com/terrestris/geostyler-legend)
 [![Coverage Status](https://coveralls.io/repos/github/terrestris/geostyler-legend/badge.svg?branch=master)](https://coveralls.io/github/terrestris/geostyler-legend?branch=master)
 
-A helper class for rendering legends.
+A simple legend component for geostyler-stlye.
+
+
+### Issues
+Please provide related issues here https://github.com/terrestris/geostyler/issues
 
 ## Installation
 
