@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "release": "np --no-yarn && git push git@github.com:terrestris/geostyler-legend.git master --tags",
+    "release": "np --no-yarn && git push git@github.com:geostyler/geostyler-legend.git master --tags",
     "lint": "tslint --project tsconfig.json --config tslint.json && tsc --noEmit --project tsconfig.json",
     "test": "jest --maxWorkers=4",
     "test:watch": "jest --watchAll",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/terrestris/geostyler-legend.git"
+    "url": "git+https://github.com/geostyler/geostyler-legend.git"
   },
-  "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
+  "author": "geostyler GmbH & Co. KG <info@geostyler.de>",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/terrestris/geostyler-legend/issues"
+    "url": "https://github.com/geostyler/geostyler-legend/issues"
   },
-  "homepage": "https://github.com/terrestris/geostyler-legend#readme",
+  "homepage": "https://github.com/geostyler/geostyler-legend#readme",
   "dependencies": {
     "@types/d3-selection": "^1",
     "geostyler-style": "^2.0.3",

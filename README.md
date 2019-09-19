@@ -1,8 +1,8 @@
 # geostyler-legend
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/terrestris/geostyler-legend.svg)](https://greenkeeper.io/)
-[![Build Status](https://travis-ci.com/terrestris/geostyler-legend.svg?branch=master)](https://travis-ci.com/terrestris/geostyler-legend)
-[![Coverage Status](https://coveralls.io/repos/github/terrestris/geostyler-legend/badge.svg?branch=master)](https://coveralls.io/github/terrestris/geostyler-legend?branch=master)
+[![Greenkeeper badge](https://badges.greenkeeper.io/geostyler/geostyler-legend.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.com/geostyler/geostyler-legend.svg?branch=master)](https://travis-ci.com/geostyler/geostyler-legend)
+[![Coverage Status](https://coveralls.io/repos/github/geostyler/geostyler-legend/badge.svg?branch=master)](https://coveralls.io/github/geostyler/geostyler-legend?branch=master)
 
 A helper class for rendering legends.
 
@@ -45,7 +45,7 @@ one column with all the legends, thus ignoring the size parameter for the height
 
 If you want to contribute, you can build the project like this:
 
-* `git clone https://github.com/terrestris/geostyler-legend`
+* `git clone https://github.com/geostyler/geostyler-legend`
 * `cd geostyler-legend`
 * `npm i`
 
