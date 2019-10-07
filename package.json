@@ -28,7 +28,7 @@
   "dependencies": {
     "@types/d3-selection": "^1",
     "geostyler-style": "^2.0.3",
-    "geostyler-openlayers-parser": "^1.1.4"
+    "geostyler-openlayers-parser": "^2.0.0"
   },
   "peerDependencies": {
     "d3": "^5",
@@ -56,7 +56,7 @@
     "jest-canvas-mock": "^2.1.1",
     "jsdom": "^15",
     "np": "^5",
-    "ol": "^5",
+    "ol": "^6.0.1",
     "rimraf": "^3.0.0",
     "tslint": "^5.19.0",
     "typedoc": "^0.15.0",
