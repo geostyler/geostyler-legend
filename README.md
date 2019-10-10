@@ -7,9 +7,6 @@
 A simple legend component for geostyler-stlye.
 
 
-### Issues
-Please provide related issues here https://github.com/terrestris/geostyler/issues
-
 ## Installation
 
 ```javascript static
