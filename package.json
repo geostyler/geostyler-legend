@@ -15,6 +15,9 @@
     "build": "tsc -p ./tsconfig.prod.json",
     "start": "npm run clean:dist && webpack --mode=development --watch"
   },
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/geostyler/geostyler-legend.git"
