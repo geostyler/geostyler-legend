@@ -1,4 +1,4 @@
-/*eslint-env jest*/
+/* eslint-env jest */
 
 import LegendRenderer from './LegendRenderer';
 import { select } from 'd3-selection';
@@ -52,7 +52,7 @@ describe('LegendRenderer', () => {
     expect(() => renderer.getRuleIcon({
       symbolizers: [{
         kind: 'Mark',
-        wellKnownName: 'Circle'
+        wellKnownName: 'circle'
       }],
       name: ''
     })).not.toThrow();
@@ -63,7 +63,7 @@ describe('LegendRenderer', () => {
       size: [0, 0]
     });
     const dom: any = document.createElement('svg');
-    const result = renderer.renderLegendItem(select(<SVGSVGElement> dom), {
+    const result = renderer.renderLegendItem(select(<SVGGElement> dom), {
       title: 'Example',
       rule: {
         name: 'Item 1',
@@ -82,13 +82,13 @@ describe('LegendRenderer', () => {
       size: [0, 0]
     });
     const dom: any = document.createElement('svg');
-    const result = renderer.renderLegendItem(select(<SVGSVGElement> dom), {
+    const result = renderer.renderLegendItem(select(<SVGGElement> dom), {
       title: 'Example',
       rule: {
         name: 'Item 1',
         symbolizers: [{
           kind: 'Mark',
-          wellKnownName: 'Circle'
+          wellKnownName: 'circle'
         }]
       }
     }, [0, 0]);
@@ -107,7 +107,7 @@ describe('LegendRenderer', () => {
           name: 'Item 1',
           symbolizers: [{
             kind: 'Mark',
-            wellKnownName: 'Circle'
+            wellKnownName: 'circle'
           }]
         }]
       }]
