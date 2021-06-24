@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.com/geostyler/geostyler-legend.svg?branch=master)](https://travis-ci.com/geostyler/geostyler-legend)
 [![Coverage Status](https://coveralls.io/repos/github/geostyler/geostyler-legend/badge.svg?branch=master)](https://coveralls.io/github/geostyler/geostyler-legend?branch=master)
 
-A simple legend component for geostyler-stlye.
+A simple legend component for geostyler-style.
 
 
 ## Installation
