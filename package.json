@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/geostyler/geostyler-legend#readme",
   "dependencies": {
-    "@types/d3-selection": "^2.0.0",
+    "@types/d3-selection": "^3.0.1",
     "geostyler-style": "^4.0.3",
     "geostyler-openlayers-parser": "^2.3.0"
   },
