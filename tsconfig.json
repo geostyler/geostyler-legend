@@ -1,30 +1,26 @@
 {
   "compilerOptions": {
+    "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
     "checkJs": false,
     "declaration": true,
-    "outDir": "dist",
-    "module": "commonjs",
-    "target": "es5",
-    "lib": ["esnext", "dom"],
-    "sourceMap": true,
-    "allowJs": false,
-    "jsx": "react",
-    "moduleResolution": "node",
-    "rootDir": "src",
     "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "lib": ["esnext", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true,
     "strictNullChecks": false,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true
+    "target": "es5"
   },
-  "include": [
-    "src/**/*.ts",
-    "oltypes.d.ts"
-  ],
   "exclude": [
     "node_modules",
     "build",
@@ -39,8 +35,5 @@
     "coverage",
     "**.config.js",
     "**/*.spec.ts"
-  ],
-  "types": [
-    "d3-selection"
   ]
 }

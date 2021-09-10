@@ -1,9 +1,11 @@
 import { select, Selection, BaseType } from 'd3-selection';
 
 import { boundingExtent } from 'ol/extent';
+import OlGeometry from 'ol/geom/Geometry';
 import OlGeomPoint from 'ol/geom/Point';
 import OlGeomPolygon from 'ol/geom/Polygon';
 import OlGeomLineString from 'ol/geom/LineString';
+import OlStyle from 'ol/style/Style';
 import Renderer from 'ol/render/canvas/Immediate';
 import { create as createTransform } from 'ol/transform';
 import {
@@ -13,9 +15,6 @@ import {
 } from 'geostyler-style';
 
 import OlStyleParser from 'geostyler-openlayers-parser';
-
-interface OlStyle {}
-interface OlGeometry {}
 
 interface LegendItemConfiguration {
   rule?: Rule;
@@ -97,33 +96,33 @@ class LegendRenderer {
       container = container.append('g')
         .attr('class', 'legend-item')
         .attr('title', item.title);
-      const img = this.getRuleIcon(item.rule);
-      return img.then((uri: string) => {
-        if (!hideRect) {
-          container.append('rect')
+      return this.getRuleIcon(item.rule)
+        .then((uri) => {
+          if (!hideRect) {
+            container.append('rect')
+              .attr('x', position[0] + 1)
+              .attr('y', position[1])
+              .attr('width', iconSize[0])
+              .attr('height', iconSize[1])
+              .style('fill-opacity', 0)
+              .style('stroke', 'black');
+          }
+          container.append('image')
             .attr('x', position[0] + 1)
             .attr('y', position[1])
             .attr('width', iconSize[0])
             .attr('height', iconSize[1])
-            .style('fill-opacity', 0)
-            .style('stroke', 'black');
-        }
-        container.append('image')
-          .attr('x', position[0] + 1)
-          .attr('y', position[1])
-          .attr('width', iconSize[0])
-          .attr('height', iconSize[1])
-          .attr('href', uri);
-        container.append('text')
-          .text(item.title)
-          .attr('x', position[0] + iconSize[0] + 5)
-          .attr('y', position[1] + 20);
-        position[1] += iconSize[1] + 5;
-        if (maxColumnHeight && position[1] + iconSize[1] + 5 >= maxColumnHeight) {
-          position[1] = 5;
-          position[0] += maxColumnWidth;
-        }
-      });
+            .attr('href', uri);
+          container.append('text')
+            .text(item.title)
+            .attr('x', position[0] + iconSize[0] + 5)
+            .attr('y', position[1] + 20);
+          position[1] += iconSize[1] + 5;
+          if (maxColumnHeight && position[1] + iconSize[1] + 5 >= maxColumnHeight) {
+            position[1] = 5;
+            position[0] += maxColumnWidth;
+          }
+        });
     }
     return undefined;
   }
@@ -190,7 +189,7 @@ class LegendRenderer {
    * Returns a promise resolving to a data uri with the appropriate rule icon.
    * @param {Object} rule the geostyler rule
    */
-  getRuleIcon(rule: Rule): Promise<OlStyle> {
+  getRuleIcon(rule: Rule): Promise<string> {
     const canvas = document.createElement('canvas');
     canvas.setAttribute('width', `${iconSize[0]}`);
     canvas.setAttribute('height', `${iconSize[1]}`);
@@ -211,7 +210,7 @@ class LegendRenderer {
         symbolizers: rule.symbolizers
       }]
     };
-    const promise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       styleParser.writeStyle(style)
         .then((olStyle: OlStyle) => {
           renderer.setStyle(olStyle);
@@ -222,7 +221,6 @@ class LegendRenderer {
           reject();
         });
     });
-    return promise;
   }
 
   /**
