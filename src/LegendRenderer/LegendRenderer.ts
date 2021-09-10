@@ -259,10 +259,10 @@ class LegendRenderer {
 
   /**
    * Renders the configured legend.
-   * @param {HTMLElement} parent a node to append the svg to
+   * @param {HTMLElement} target a node to append the svg to
    * @return {Promise<void>} a promise resolving once the legend has finished rendering
    */
-  render(parent: HTMLElement): Promise<void> {
+  render(target: HTMLElement): Promise<void> {
     const {
       styles,
       configs,
@@ -275,8 +275,14 @@ class LegendRenderer {
     if (configs) {
       legends.unshift.apply(legends, configs);
     }
-    const svg = select(parent)
+
+    const svgClass = 'geostyler-legend-renderer';
+    const parent = select(target);
+    parent.select(`.${svgClass}`).remove();
+
+    const svg = parent
       .append('svg')
+      .attr('class', svgClass)
       .attr('viewBox', `0 0 ${width} ${height}`)
       .attr('top', 0)
       .attr('left', 0)
