@@ -16,7 +16,7 @@
     "start": "npm run clean:dist && webpack --mode=development --watch"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   },
   "repository": {
     "type": "git",
