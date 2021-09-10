@@ -16,6 +16,7 @@
     "noUnusedLocals": true,
     "outDir": "dist",
     "rootDir": "src",
+    "skipLibCheck": true,
     "sourceMap": true,
     "strictNullChecks": false,
     "suppressImplicitAnyIndexErrors": true,
