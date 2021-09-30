@@ -5,7 +5,7 @@ import OlGeometry from 'ol/geom/Geometry';
 import OlGeomPoint from 'ol/geom/Point';
 import OlGeomPolygon from 'ol/geom/Polygon';
 import OlGeomLineString from 'ol/geom/LineString';
-import OlStyle from 'ol/style/Style';
+import OlStyle, { StyleLike as OlStyleLike } from 'ol/style/Style';
 import Renderer from 'ol/render/canvas/Immediate';
 import { create as createTransform } from 'ol/transform';
 import {
@@ -15,6 +15,7 @@ import {
 } from 'geostyler-style';
 
 import OlStyleParser from 'geostyler-openlayers-parser';
+import OlFeature from 'ol/Feature';
 
 interface LegendItemConfiguration {
   rule?: Rule;
@@ -212,9 +213,22 @@ class LegendRenderer {
     };
     return new Promise((resolve, reject) => {
       styleParser.writeStyle(style)
-        .then((olStyle: OlStyle) => {
-          renderer.setStyle(olStyle);
-          geoms.forEach((geom: OlGeometry) => renderer.drawGeometry(geom));
+        .then((olStyle: OlStyleLike) => {
+          function drawGeoms(){
+            geoms.forEach((geom: OlGeometry) => renderer.drawGeometry(geom));
+          }
+          if (typeof olStyle == 'function') {
+            olStyle = <OlStyle | OlStyle[]>olStyle(new OlFeature(geoms[0]), 1);
+          }
+          if (Array.isArray(olStyle)) {
+            olStyle.forEach((styleItem: OlStyle) => {
+              renderer.setStyle(styleItem);
+              drawGeoms();
+            });
+          } else {
+            renderer.setStyle(olStyle);
+            drawGeoms();
+          }
           resolve(canvas.toDataURL('image/png'));
         })
         .catch(() => {

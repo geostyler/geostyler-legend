@@ -56,6 +56,23 @@ describe('LegendRenderer', () => {
       }],
       name: ''
     })).not.toThrow();
+    expect(() => renderer.getRuleIcon({
+      symbolizers: [{
+        kind: 'Text',
+        label: 'X'
+      }],
+      name: ''
+    })).not.toThrow();
+    expect(() => renderer.getRuleIcon({
+      symbolizers: [{
+        kind: 'Mark',
+        wellKnownName: 'circle'
+      }, {
+        kind: 'Icon',
+        image: 'http://domain/image.png'
+      }],
+      name: ''
+    })).not.toThrow();
   });
 
   it('rejects to render a single empty legend item', done => {
