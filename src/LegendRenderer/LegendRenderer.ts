@@ -5,7 +5,7 @@ import OlGeometry from 'ol/geom/Geometry';
 import OlGeomPoint from 'ol/geom/Point';
 import OlGeomPolygon from 'ol/geom/Polygon';
 import OlGeomLineString from 'ol/geom/LineString';
-import OlStyle, { StyleLike as OlStyleLike } from 'ol/style/Style';
+import OlStyle from 'ol/style/Style';
 import Renderer from 'ol/render/canvas/Immediate';
 import { create as createTransform } from 'ol/transform';
 import {
@@ -211,31 +211,29 @@ class LegendRenderer {
         symbolizers: rule.symbolizers
       }]
     };
-    return new Promise((resolve, reject) => {
-      styleParser.writeStyle(style)
-        .then((olStyle: OlStyleLike) => {
-          function drawGeoms(){
-            geoms.forEach((geom: OlGeometry) => renderer.drawGeometry(geom));
-          }
-          if (typeof olStyle == 'function') {
-            olStyle = <OlStyle | OlStyle[]>olStyle(new OlFeature(geoms[0]), 1);
-          }
-          if (Array.isArray(olStyle)) {
-            olStyle.forEach((styleItem: OlStyle) => {
-              renderer.setStyle(styleItem);
-              drawGeoms();
-            });
-          } else {
-            renderer.setStyle(olStyle);
-            drawGeoms();
-          }
-          resolve(canvas.toDataURL('image/png'));
-        })
-        .catch(() => {
-          reject();
+    return new Promise(async (resolve, reject) => {
+      let { output: olStyle, errors } = await styleParser.writeStyle(style);
+      if (errors) {
+        reject(errors);
+      }
+      function drawGeoms(){
+        geoms.forEach((geom: OlGeometry) => renderer.drawGeometry(geom));
+      }
+      if (typeof olStyle == 'function') {
+        olStyle = <OlStyle | OlStyle[]>olStyle(new OlFeature(geoms[0]), 1);
+      }
+      if (Array.isArray(olStyle)) {
+        olStyle.forEach((styleItem: OlStyle) => {
+          renderer.setStyle(styleItem);
+          drawGeoms();
         });
+      } else {
+        renderer.setStyle(olStyle);
+        drawGeoms();
+      }
+      resolve(canvas.toDataURL('image/png'));
     });
-  }
+  };
 
   /**
    * Render a single legend.
