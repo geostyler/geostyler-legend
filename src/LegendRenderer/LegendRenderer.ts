@@ -123,6 +123,9 @@ class LegendRenderer {
             position[1] = 5;
             position[0] += maxColumnWidth;
           }
+        })
+        .catch(() => {
+          return undefined;
         });
     }
     return undefined;
@@ -212,26 +215,30 @@ class LegendRenderer {
       }]
     };
     return new Promise(async (resolve, reject) => {
-      let { output: olStyle, errors } = await styleParser.writeStyle(style);
-      if (errors) {
-        reject(errors);
-      }
       function drawGeoms(){
         geoms.forEach((geom: OlGeometry) => renderer.drawGeometry(geom));
       }
-      if (typeof olStyle == 'function') {
-        olStyle = <OlStyle | OlStyle[]>olStyle(new OlFeature(geoms[0]), 1);
-      }
-      if (Array.isArray(olStyle)) {
-        olStyle.forEach((styleItem: OlStyle) => {
-          renderer.setStyle(styleItem);
+      try {
+        let { output: olStyle, errors = [] } = await styleParser.writeStyle(style);
+        if (errors.length > 0) {
+          reject(errors[0]);
+        }
+        if (typeof olStyle == 'function') {
+          olStyle = <OlStyle | OlStyle[]>olStyle(new OlFeature(geoms[0]), 1);
+        }
+        if (Array.isArray(olStyle)) {
+          olStyle.forEach((styleItem: OlStyle) => {
+            renderer.setStyle(styleItem);
+            drawGeoms();
+          });
+        } else {
+          renderer.setStyle(olStyle);
           drawGeoms();
-        });
-      } else {
-        renderer.setStyle(olStyle);
-        drawGeoms();
+        }
+        resolve(canvas.toDataURL('image/png'));
+      } catch (error) {
+        reject();
       }
-      resolve(canvas.toDataURL('image/png'));
     });
   };
 

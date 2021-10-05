@@ -75,12 +75,12 @@ describe('LegendRenderer', () => {
     })).not.toThrow();
   });
 
-  it('rejects to render a single empty legend item', done => {
+  it('rejects to render a single empty legend item', async () => {
     const renderer = new LegendRenderer({
       size: [0, 0]
     });
     const dom: any = document.createElement('svg');
-    const result = renderer.renderLegendItem(select(<SVGGElement> dom), {
+    const returnValue = await renderer.renderLegendItem(select(<SVGGElement> dom), {
       title: 'Example',
       rule: {
         name: 'Item 1',
@@ -89,9 +89,7 @@ describe('LegendRenderer', () => {
         }]
       }
     }, [0, 0]);
-    result.catch(() => {
-      done();
-    });
+    expect(returnValue).toBeUndefined();
   });
 
   it('renders a single non-empty legend item', done => {
