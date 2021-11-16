@@ -3,6 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "sourceMap": false,
+    "inlineSources": false,
     "esModuleInterop": true
   }
 }
