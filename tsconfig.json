@@ -6,6 +6,7 @@
     "checkJs": false,
     "declaration": true,
     "forceConsistentCasingInFileNames": true,
+    "inlineSources": true,
     "jsx": "react",
     "lib": ["esnext", "dom"],
     "module": "commonjs",
