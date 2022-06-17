@@ -50,12 +50,8 @@ If you want to contribute, you can build the project like this:
 * `cd geostyler-legend`
 * `npm i`
 
-and then either
+and then
 
-* `npm run build:dev`
-
-in order to get a development build or
-
-* `npm run build:dist`
+* `npm run build`
 
 in order to get a production build.
