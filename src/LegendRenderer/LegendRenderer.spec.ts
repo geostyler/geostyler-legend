@@ -137,4 +137,45 @@ describe('LegendRenderer', () => {
     });
   });
 
+  it('renders raster and vector legends', async() => {
+    const renderer = new LegendRenderer({
+      size: [100, 100],
+      styles: [{
+        name: 'Example',
+        rules: [{
+          name: 'Item 1',
+          symbolizers: [{
+            kind: 'Mark',
+            wellKnownName: 'circle'
+          }]
+        }]
+      }],
+      remoteLegends: [{
+        title: 'OSM-WMS',
+        url: 'https://ows.terrestris.de/osm/service?' +
+          'REQUEST=GetLegendGraphic&SERVICE=WMS&' +
+          'VERSION=1.3.0&LAYER=OSM-WMS&FORMAT=image%2Fpng'
+      }]
+    });
+    const dom: any = document.createElement('div');
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        blob: () => Promise.resolve(new Blob(
+          ['<image src="data:image/png;base64,"></image>'],
+          {type: 'image/png'}))
+      })
+    );
+    HTMLImageElement.prototype.decode = () => new Promise(
+      (resolve) => resolve());
+    await renderer.render(dom);
+
+    const texts = dom.querySelectorAll('text');
+    expect(texts).toHaveLength(3);
+    expect(texts[0].textContent).toBe('Example');
+    expect(texts[1].textContent).toBe('Item 1');
+    expect(texts[2].textContent).toBe('OSM-WMS');
+    const images = dom.querySelectorAll('image');
+    expect(images).toHaveLength(2);
+  });
+
 });

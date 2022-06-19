@@ -13,7 +13,6 @@ import {
   Symbolizer,
   Rule
 } from 'geostyler-style';
-
 import OlStyleParser from 'geostyler-openlayers-parser';
 import OlFeature from 'ol/Feature';
 
@@ -27,9 +26,15 @@ interface LegendConfiguration {
   title: string;
 }
 
+interface RemoteLegend {
+  url: string;
+  title: string;
+}
+
 interface LegendsConfiguration {
   styles?: Style[];
   configs?: LegendItemConfiguration[];
+  remoteLegends?: RemoteLegend[];
   size: [number, number];
   maxColumnHeight?: number;
   maxColumnWidth?: number;
@@ -266,8 +271,8 @@ class LegendRenderer {
         .text(config.title)
         .attr('class', 'legend-title')
         .attr('text-anchor', 'start')
-        .attr('dy', '1em')
-        .attr('dx', position[0]);
+        .attr('dx', position[0])
+        .attr('dy', position[1] === 0 ? '1em': position[1] + 15);
       position[1] += 20;
     }
 
@@ -277,15 +282,88 @@ class LegendRenderer {
   }
 
   /**
+   * Render all images given by URL and append them to the legend
+   * @param {RemoteLegend[]} remoteLegends the array of remote legend objects
+   * @param {Selection} svg the root node
+   * @param {[number, number]} position the current position
+   */
+  async renderImages(
+    remoteLegends: RemoteLegend[],
+    svg: Selection<SVGSVGElement, {}, null, undefined>,
+    position: [number, number]
+  ) {
+    const legendSpacing = 20;
+    const titleSpacing = 5;
+    for (let i = 0; i < remoteLegends.length; i++) {
+      const legendUrl = remoteLegends[i].url;
+      const legendTitle = remoteLegends[i].title;
+      try {
+        const response = await fetch(legendUrl);
+        const blob = await response.blob();
+        const readBlob = async (imageBlob: Blob): Promise<string | ArrayBuffer> => {
+          return new Promise((resolve, reject) => {
+            try {
+              const fileReader = new FileReader();
+              fileReader.onload = async (e) => {
+                const result = e.target.result;
+                resolve(result) ;
+              };
+              fileReader.readAsDataURL(imageBlob) ;
+            } catch (e) {
+              reject(e);
+            }
+          });
+        };
+        const base64 = await readBlob(blob);
+
+        let img: HTMLImageElement = new Image();
+        img.src = base64.toString();
+        await img.decode();
+
+        if (this.config.overflow === 'auto' &&
+            img.height + legendSpacing + titleSpacing +
+            position[1] > this.config.maxColumnHeight) {
+          position[0] += this.config.maxColumnWidth;
+          position[1] = 0;
+        }
+        if (legendTitle) {
+          const container = svg.append('g');
+          position[1] += legendSpacing;
+          container.append('text')
+            .text(legendTitle)
+            .attr('class', 'legend-title')
+            .attr('text-anchor', 'start')
+            .attr('dx', position[0])
+            .attr('dy', position[1]);
+          position[1] += titleSpacing;
+        }
+        svg.append('svg:image')
+          .attr('x', position[0])
+          .attr('y', position[1])
+          .attr('width', img.width)
+          .attr('height', img.height)
+          .attr('href', base64.toString());
+
+        position[1] += img.height;
+      } catch (err) {
+        console.error('Error on fetching legend: ', err);
+        continue;
+      }
+    };
+    svg.attr('xmlns', 'http://www.w3.org/2000/svg');
+  }
+
+  /**
    * Renders the configured legend.
    * @param {HTMLElement} target a node to append the svg to
-   * @return {Promise<void>} a promise resolving once the legend has finished rendering
+   * @return {SVGSVGElement} The final SVG legend
    */
-  render(target: HTMLElement): Promise<void> {
+  async render(target: HTMLElement) {
     const {
       styles,
       configs,
-      size: [width, height]
+      size: [width, height],
+      remoteLegends
     } = this.config;
     const legends: LegendConfiguration[] = [];
     if (styles) {
@@ -309,21 +387,20 @@ class LegendRenderer {
       .attr('height', height);
 
     const position: [number, number] = [0, 0];
-
-    const promise = legends.reduce((cur, legend) => {
-      return cur.then(() => this.renderLegend(legend, svg, position));
-    }, Promise.resolve());
-    return promise.then(() => {
-      const nodes = svg.selectAll('g.legend-item');
-      this.shortenLabels(nodes, this.config.maxColumnWidth);
-      if (!this.config.maxColumnHeight) {
-        svg
-          .attr('viewBox', `0 0 ${width} ${position[1]}`)
-          .attr('height', position[1]);
-      }
-    });
+    for (let i = 0; i < legends.length; i++) {
+      await this.renderLegend(legends[i], svg, position);
+    };
+    if (remoteLegends) {
+      await this.renderImages(remoteLegends, svg, position);
+    }
+    const nodes = svg.selectAll('g.legend-item');
+    this.shortenLabels(nodes, this.config.maxColumnWidth);
+    if (!this.config.maxColumnHeight) {
+      svg
+        .attr('viewBox', `0 0 ${width} ${position[1]}`)
+        .attr('height', position[1]);
+    }
+    return svg;
   }
-
 }
-
 export default LegendRenderer;
