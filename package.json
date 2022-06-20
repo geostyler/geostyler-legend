@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "prerelease": "npm run build",
     "release": "np --no-yarn && git push git@github.com:geostyler/geostyler-legend.git master --tags",
     "lint": "eslint -c .eslintrc.js --ext .ts . && tsc --noEmit --project tsconfig.json",
     "test": "jest --maxWorkers=4",
@@ -12,11 +13,10 @@
     "coveralls": "cat coverage/lcov.info | coveralls",
     "clean:dist": "rimraf ./dist/*",
     "prebuild": "npm run test",
-    "build": "tsc -p ./tsconfig.prod.json",
-    "start": "npm run clean:dist && webpack --mode=development --watch"
+    "build": "tsc -p ./tsconfig.prod.json"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "dist"
@@ -33,7 +33,6 @@
   "homepage": "https://github.com/geostyler/geostyler-legend#readme",
   "dependencies": {
     "@types/d3-selection": "^3.0.1",
-    "geostyler-style": "^5.0.0",
     "geostyler-openlayers-parser": "^3.0.0"
   },
   "peerDependencies": {
@@ -47,11 +46,11 @@
     "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.14.5",
     "@babel/preset-typescript": "^7.14.5",
-    "@terrestris/eslint-config-typescript": "^2.0.0",
+    "@terrestris/eslint-config-typescript": "^3.0.0",
     "@types/jest": "^27.0.1",
-    "@typescript-eslint/eslint-plugin": "^4.26.1",
+    "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/eslint-plugin-tslint": "^5.2.0",
-    "@typescript-eslint/parser": "^4.26.1",
+    "@typescript-eslint/parser": "^5.28.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^27.0.2",
     "babel-loader": "^8.2.2",
@@ -60,10 +59,10 @@
     "canvas": "2.8.0",
     "coveralls": "^3.1.0",
     "d3": "^6.7.0",
-    "eslint": "^7.28.0",
+    "eslint": "^8.18.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "geostyler": "^7.0.1",
+    "geostyler-style": "^5.1.0",
     "jest": "^27.0.4",
     "jest-canvas-mock": "^2.3.1",
     "jsdom": "^18.0.0",
@@ -71,8 +70,6 @@
     "ol": "^6.5.0",
     "rimraf": "^3.0.2",
     "typedoc": "^0.22.4",
-    "typescript": "^4.3.2",
-    "webpack": "^5.38.1",
-    "webpack-cli": "^4.7.2"
+    "typescript": "^4.3.2"
   }
 }

@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [14.x, 16.x, 18.x]
 
     steps:
     - name: Checkout sources
@@ -29,7 +29,9 @@ jobs:
           ${{ runner.OS }}-
 
     - name: Install dependencies ⏬
-      run: npm install
+      run: |
+        sudo apt-get install -y libpixman-1-dev libpango1.0-dev libgif-dev libcairo-dev build-essential libjpeg-dev librsvg2-dev
+        npm ci
 
     - name: Lint code 💄
       run: npm run lint
