@@ -1,6 +1,6 @@
 {
   "name": "geostyler-legend",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "A simple legend component for geostyler-stlye.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
