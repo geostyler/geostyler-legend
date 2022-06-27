@@ -36,7 +36,7 @@
     "geostyler-openlayers-parser": "^3.0.0"
   },
   "peerDependencies": {
-    "d3": "^6.7.0",
+    "d3": "^7.5.0",
     "ol": "^6.5.0"
   },
   "devDependencies": {
@@ -58,7 +58,7 @@
     "babel-plugin-import": "^1.13.3",
     "canvas": "2.8.0",
     "coveralls": "^3.1.0",
-    "d3": "^6.7.0",
+    "d3": "^7.5.0",
     "eslint": "^8.18.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
