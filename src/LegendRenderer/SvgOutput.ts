@@ -1,31 +1,35 @@
 import {BaseType, select, Selection} from 'd3-selection';
 import AbstractOutput from './AbstractOutput';
 
+const ROOT_CLASS = 'geostyler-legend-renderer';
+
 export default class SvgOutput extends AbstractOutput {
   root: Selection<SVGSVGElement, {}, null, undefined> = null;
   currentContainer: Selection<SVGGElement, {}, null, undefined> = null;
 
   constructor(
-    target: HTMLElement,
     size: [number, number],
     maxColumnWidth: number | null,
-    maxColumnHeight: number | null
+    maxColumnHeight: number | null,
+    target?: HTMLElement,
   ) {
     super(size, maxColumnWidth, maxColumnHeight);
 
-    const svgClass = 'geostyler-legend-renderer';
-    const parent = select(target);
-    parent.select(`.${svgClass}`).remove();
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg') as SVGSVGElement;
 
-    this.root = parent
-      .append('svg')
-      .attr('class', svgClass)
+    this.root = select(svg)
+      .attr('class', ROOT_CLASS)
       .attr('viewBox', `0 0 ${size[0]} ${size[1]}`)
       .attr('top', 0)
       .attr('left', 0)
       .attr('width', size[0])
       .attr('height', size[1]);
     this.currentContainer = this.root;
+
+    if (target) {
+      select(target).select(`.${ROOT_CLASS}`).remove();
+      target.append(this.root.node());
+    }
   }
 
   useContainer(title: string) {

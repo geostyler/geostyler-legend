@@ -15,6 +15,7 @@ import OlStyleParser from 'geostyler-openlayers-parser';
 import OlFeature from 'ol/Feature';
 import SvgOutput from './SvgOutput';
 import AbstractOutput from './AbstractOutput';
+import PngOutput from './PngOutput'
 
 interface LegendItemConfiguration {
   rule?: Rule;
@@ -288,12 +289,7 @@ class LegendRenderer {
     }
   }
 
-  /**
-   * Renders the configured legend.
-   * @param {HTMLElement} target a node to append the svg to
-   * @return {SVGSVGElement} The final SVG legend
-   */
-  async render(target: HTMLElement) {
+  async renderAsImage(format?: 'svg' | 'png', target?: HTMLElement): Promise<Element> {
     const {
       styles,
       configs,
@@ -309,15 +305,27 @@ class LegendRenderer {
     if (configs) {
       legends.unshift.apply(legends, configs);
     }
-    const svgOutput = new SvgOutput(target, [width, height], maxColumnWidth, maxColumnHeight);
+    const outputClass = format === 'svg' ? SvgOutput : PngOutput;
+    const output = new outputClass([width, height], maxColumnWidth, maxColumnHeight, target);
     const position: [number, number] = [0, 0];
     for (let i = 0; i < legends.length; i++) {
-      await this.renderLegend(legends[i], svgOutput, position);
+      await this.renderLegend(legends[i], output, position);
     }
     if (remoteLegends) {
-      await this.renderImages(remoteLegends, svgOutput, position);
+      await this.renderImages(remoteLegends, output, position);
     }
-    return svgOutput.generate(position[1]);
+    return output.generate(position[1]);
+  }
+
+  /**
+   * Renders the configured legend as an SVG image in the given target container. All pre-existing legends
+   * will be removed.
+   * @param {HTMLElement} target a node to append the svg to
+   * @param format
+   * @return {SVGSVGElement} The final SVG legend
+   */
+  async render(target: HTMLElement, format: 'svg' | 'png' = 'svg') {
+    await this.renderAsImage(format, target);
   }
 }
 export default LegendRenderer;
