@@ -2,8 +2,21 @@ import AbstractOutput from './AbstractOutput';
 
 const ROOT_CLASS = 'geostyler-legend-renderer';
 
+function cssDimensionToPx(dimension: string | number): number {
+  if (typeof dimension === 'number') {
+    return dimension;
+  }
+  const div = document.createElement('div');
+  document.body.append(div);
+  div.style.height = dimension;
+  const height = parseFloat(getComputedStyle(div).height.replace(/px$/, ''));
+  div.remove();
+  return height;
+}
+
 export default class PngOutput extends AbstractOutput {
   canvas: HTMLCanvasElement;
+  context: CanvasRenderingContext2D;
 
   constructor(
     size: [number, number],
@@ -12,26 +25,42 @@ export default class PngOutput extends AbstractOutput {
     private target?: HTMLElement,
   ) {
     super(size, maxColumnWidth, maxColumnHeight);
+    this.createCanvas(...size);
+  }
+
+  private createCanvas(width: number, height: number) {
     this.canvas = document.createElement('canvas');
     this.canvas.className = ROOT_CLASS;
-    this.canvas.width = size[0];
-    this.canvas.height = size[1];
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.context = this.canvas.getContext('2d');
+    this.context.font = '14px sans-serif';
+
     if (this.target) {
-      target.querySelectorAll(`.${ROOT_CLASS}`).forEach(e => e.remove());
-      target.append(this.canvas);
+      this.target.querySelectorAll(`.${ROOT_CLASS}`).forEach(e => e.remove());
+      this.target.append(this.canvas);
     }
   }
 
-  useContainer(title: string) {
+  private expandHeight(newHeight: number) {
+    if (this.canvas.height >= newHeight) {
+      return;
+    }
+    const oldCanvas = this.canvas;
+    this.createCanvas(this.canvas.width, newHeight);
+    this.context.drawImage(oldCanvas, 0, 0);
   }
 
-  useRoot() {
-  }
+  useContainer(title: string) {}
+
+  useRoot() {}
 
   addTitle(text: string, x: number | string, y: number | string) {
+    this.context.fillText(text, cssDimensionToPx(x), cssDimensionToPx(y));
   }
 
   addLabel(text: string, x: number | string, y: number | string) {
+    this.context.fillText(text, cssDimensionToPx(x), cssDimensionToPx(y));
   }
 
   addImage(
@@ -42,11 +71,19 @@ export default class PngOutput extends AbstractOutput {
     y: number|string,
     drawRect: boolean,
   ) {
+    const xPx = cssDimensionToPx(x);
+    const yPx = cssDimensionToPx(y);
+    this.expandHeight(yPx + imgHeight);
+    const image = new Image();
+    image.src = dataUrl;
+    this.context.drawImage(image, xPx, yPx, imgWidth, imgHeight);
+    if (drawRect) {
+      this.context.strokeStyle = '1px solid black';
+      this.context.strokeRect(xPx, yPx, imgWidth, imgHeight);
+    }
   }
 
   generate(finalHeight: number) {
-    const ctx = this.canvas.getContext('2d');
-    ctx.fillText(`Hello world! size = ${this.size[0]}x${this.size[1]}`, 20, 20);
     return this.canvas;
   }
 }
