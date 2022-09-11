@@ -49,3 +49,229 @@ export const SAMPLE_SVG_COLUMN_CONSTRAINTS =
   '<rect x="200" y="550" width="100" height="50" style="fill-opacity: 0; stroke: black;"></rect>' +
   '<image x="200" y="550" width="100" height="50" href="https://my-domain/image2.png"></image>' +
   '</svg>';
+
+// as reported by jest-canvas-mock
+export const SAMPLE_PNG_EVENTS = [
+  {
+    'props': {
+      'value': '14px sans-serif'
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'font'
+  },
+  {
+    'props': {
+      'maxWidth': null as number,
+      'text': 'Inside a container',
+      'x': 180,
+      'y': 180
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'fillText'
+  },
+  {
+    'props': {
+      'maxWidth': null,
+      'text': 'An image in a container',
+      'x': 200,
+      'y': 220
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'fillText'
+  },
+  {
+    'props': {
+      'dHeight': 0,
+      'dWidth': 0,
+      'dx': 200,
+      'dy': 250,
+      'img': expect.any(Image),
+      'sHeight': 0,
+      'sWidth': 0,
+      'sx': 0,
+      'sy': 0
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'drawImage'
+  },
+  {
+    'props': {
+      'maxWidth': null,
+      'text': 'Outside a container',
+      'x': 180,
+      'y': 480
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'fillText'
+  },
+  {
+    'props': {
+      'maxWidth': null,
+      'text': 'An image',
+      'x': 200,
+      'y': 520
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'fillText'
+  },
+  {
+    'props': {
+      'dHeight': 0,
+      'dWidth': 0,
+      'dx': 200,
+      'dy': 550,
+      'img': expect.any(Image),
+      'sHeight': 0,
+      'sWidth': 0,
+      'sx': 0,
+      'sy': 0
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'drawImage'
+  },
+  {
+    'props': {
+      'height': 50,
+      'width': 100,
+      'x': 200,
+      'y': 550
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'strokeRect'
+  }
+];
+
+// events when starting with a height of 200
+export const SAMPLE_PNG_EVENTS_HEIGHT_TOO_LOW = [
+  {
+    'props': {
+      'value': '14px sans-serif'
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'font'
+  },
+  {
+    'props': {
+      'dHeight': 300,
+      'dWidth': 500,
+      'dx': 0,
+      'dy': 0,
+      'img': expect.any(HTMLCanvasElement),
+      'sHeight': 300,
+      'sWidth': 500,
+      'sx': 0,
+      'sy': 0
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'drawImage'
+  },
+  {
+    'props': {
+      'dHeight': 0,
+      'dWidth': 0,
+      'dx': 200,
+      'dy': 550,
+      'img': expect.any(Image),
+      'sHeight': 0,
+      'sWidth': 0,
+      'sx': 0,
+      'sy': 0
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'drawImage'
+  },
+  {
+    'props': {
+      'height': 50,
+      'width': 100,
+      'x': 200,
+      'y': 550
+    },
+    'transform': [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    'type': 'strokeRect'
+  }
+];

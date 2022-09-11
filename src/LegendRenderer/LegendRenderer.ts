@@ -15,7 +15,7 @@ import OlStyleParser from 'geostyler-openlayers-parser';
 import OlFeature from 'ol/Feature';
 import SvgOutput from './SvgOutput';
 import AbstractOutput from './AbstractOutput';
-import PngOutput from './PngOutput'
+import PngOutput from './PngOutput';
 
 interface LegendItemConfiguration {
   rule?: Rule;
