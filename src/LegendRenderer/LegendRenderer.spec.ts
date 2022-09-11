@@ -1,7 +1,6 @@
 /* eslint-env jest */
 
 import LegendRenderer from './LegendRenderer';
-import { select } from 'd3-selection';
 
 describe('LegendRenderer', () => {
 

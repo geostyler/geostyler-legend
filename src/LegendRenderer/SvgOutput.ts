@@ -93,10 +93,10 @@ export default class SvgOutput extends AbstractOutput {
     nodes.each(function() {
       const node = select(this);
       const text = node.select('text');
-      if (!(node.node() instanceof SVGElement)) {
+      if (!(node.node() instanceof SVGElement) || !text.size()) {
         return;
       }
-      const elem: Element = <Element> (node.node());
+      const elem: Element = <Element> (text.node());
       let width = elem.getBoundingClientRect().width;
       let adapted = false;
       while (width > maxWidth) {
