@@ -1,6 +1,23 @@
 /* eslint-env jest */
 
 import LegendRenderer from './LegendRenderer';
+import AbstractOutput from './AbstractOutput';
+
+class MockOutput extends AbstractOutput {
+  constructor(
+    protected size: [number, number],
+    protected maxColumnWidth: number | null,
+    protected maxColumnHeight: number | null
+  ) {
+    super(size, maxColumnWidth, maxColumnHeight);
+  }
+  useContainer = jest.fn();
+  useRoot = jest.fn();
+  addTitle = jest.fn();
+  addLabel = jest.fn();
+  addImage = jest.fn();
+  generate = jest.fn();
+}
 
 describe('LegendRenderer', () => {
 
@@ -78,8 +95,8 @@ describe('LegendRenderer', () => {
     const renderer = new LegendRenderer({
       size: [0, 0]
     });
-    const dom: any = document.createElement('svg');
-    const returnValue = await renderer.renderLegendItem(select(<SVGGElement> dom), {
+    const output = new MockOutput([0, 0], undefined, undefined);
+    const returnValue = await renderer.renderLegendItem(output, {
       title: 'Example',
       rule: {
         name: 'Item 1',
@@ -91,12 +108,12 @@ describe('LegendRenderer', () => {
     expect(returnValue).toBeUndefined();
   });
 
-  it('renders a single non-empty legend item', done => {
+  it('renders a single non-empty legend item', async () => {
     const renderer = new LegendRenderer({
       size: [0, 0]
     });
-    const dom: any = document.createElement('svg');
-    const result = renderer.renderLegendItem(select(<SVGGElement> dom), {
+    const output = new MockOutput([0, 0], undefined, undefined);
+    await renderer.renderLegendItem(output, {
       title: 'Example',
       rule: {
         name: 'Item 1',
@@ -106,10 +123,8 @@ describe('LegendRenderer', () => {
         }]
       }
     }, [0, 0]);
-    result.then(() => {
-      expect(dom.querySelector('text').textContent).toBe('Example');
-      done();
-    });
+    expect(output.useContainer).toHaveBeenCalledWith('Example');
+    expect(output.addLabel).toHaveBeenCalledWith('Example', 50, 20);
   });
 
   it('renders legend with a single non-empty legend item', done => {
