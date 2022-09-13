@@ -318,7 +318,7 @@ class LegendRenderer {
   }
 
   /**
-   * Renders the configured legend as an SVG image in the given target container. All pre-existing legends
+   * Renders the configured legend as an SVG or PNG image in the given target container. All pre-existing legends
    * will be removed.
    * @param {HTMLElement} target a node to append the svg to
    * @param format
