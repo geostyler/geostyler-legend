@@ -32,19 +32,6 @@ describe('PngOutput', () => {
       instrumentContext(output.context);
     });
 
-    describe('#useContainer', () => {
-      it('does nothing', () => {
-        output.useContainer('My Container');
-        // succeed
-      });
-    });
-    describe('#useRoot', () => {
-      it('does nothing', () => {
-        output.useContainer('My Container');
-        output.useRoot();
-        // succeed
-      });
-    });
     describe('#addTitle', () => {
       it('inserts a title', () => {
         output.addTitle('My Title', 100, 150);
