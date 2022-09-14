@@ -1,5 +1,3 @@
-import { select, Selection, BaseType } from 'd3-selection';
-
 import { boundingExtent } from 'ol/extent';
 import OlGeometry from 'ol/geom/Geometry';
 import OlGeomPoint from 'ol/geom/Point';
@@ -15,6 +13,9 @@ import {
 } from 'geostyler-style';
 import OlStyleParser from 'geostyler-openlayers-parser';
 import OlFeature from 'ol/Feature';
+import SvgOutput from './SvgOutput';
+import AbstractOutput from './AbstractOutput';
+import PngOutput from './PngOutput';
 
 interface LegendItemConfiguration {
   rule?: Rule;
@@ -42,10 +43,10 @@ interface LegendsConfiguration {
   hideRect?: boolean;
 }
 
-const iconSize = [45, 30];
+const iconSize: [number, number] = [45, 30];
 
 /**
- * A class that can be used to render svg legends.
+ * A class that can be used to render legends as images.
  */
 class LegendRenderer {
 
@@ -82,12 +83,12 @@ class LegendRenderer {
 
   /**
    * Renders a single legend item.
-   * @param {Selection} container the container to append the legend item to
+   * @param {AbstractOutput} output
    * @param {LegendItemConfiguration} item configuration of the legend item
    * @param {[number, number]} position the current position
    */
   renderLegendItem(
-    container: Selection<SVGGElement, {}, null, undefined>,
+    output: AbstractOutput,
     item: LegendItemConfiguration,
     position: [number, number]
   ) {
@@ -99,30 +100,11 @@ class LegendRenderer {
     } = this.config;
 
     if (item.rule) {
-      container = container.append('g')
-        .attr('class', 'legend-item')
-        .attr('title', item.title);
+      output.useContainer(item.title);
       return this.getRuleIcon(item.rule)
         .then((uri) => {
-          if (!hideRect) {
-            container.append('rect')
-              .attr('x', position[0] + 1)
-              .attr('y', position[1])
-              .attr('width', iconSize[0])
-              .attr('height', iconSize[1])
-              .style('fill-opacity', 0)
-              .style('stroke', 'black');
-          }
-          container.append('image')
-            .attr('x', position[0] + 1)
-            .attr('y', position[1])
-            .attr('width', iconSize[0])
-            .attr('height', iconSize[1])
-            .attr('href', uri);
-          container.append('text')
-            .text(item.title)
-            .attr('x', position[0] + iconSize[0] + 5)
-            .attr('y', position[1] + 20);
+          output.addImage(uri, ...iconSize, position[0] + 1, position[1], !hideRect);
+          output.addLabel(item.title, position[0] + iconSize[0] + 5, position[1] + 20);
           position[1] += iconSize[1] + 5;
           if (maxColumnHeight && position[1] + iconSize[1] + 5 >= maxColumnHeight) {
             position[1] = 5;
@@ -134,36 +116,6 @@ class LegendRenderer {
         });
     }
     return undefined;
-  }
-
-  /**
-   * Shortens the labels if they overflow.
-   * @param {Selection} nodes the legend item group nodes
-   * @param {number} maxWidth the maximum column width
-   */
-  shortenLabels(nodes: Selection<BaseType, {}, SVGSVGElement, {}>, maxWidth: number) {
-    nodes.each(function() {
-      const node = select(this);
-      const text = node.select('text');
-      if (!(node.node() instanceof SVGElement)) {
-        return;
-      }
-      const elem: Element = <Element> (node.node());
-      let width = elem.getBoundingClientRect().width;
-      let adapted = false;
-      while (width > maxWidth) {
-        let str = text.text();
-        str = str.substring(0, str.length - 1);
-        text.text(str);
-        width = elem.getBoundingClientRect().width;
-        adapted = true;
-      }
-      if (adapted) {
-        let str = text.text();
-        str = str.substring(0, str.length - 3);
-        text.text(str + '...');
-      }
-    });
   }
 
   /**
@@ -250,15 +202,15 @@ class LegendRenderer {
   /**
    * Render a single legend.
    * @param {LegendConfiguration} config the legend config
-   * @param {Selection} svg the root node
+   * @param {AbstractOutput} output
    * @param {[number, number]} position the current position
    */
   renderLegend(
     config: LegendConfiguration,
-    svg: Selection<SVGSVGElement, {}, null, undefined>,
+    output: AbstractOutput,
     position: [number, number]
   ) {
-    const container = svg.append('g');
+    output.useRoot();
     if (this.config.overflow !== 'auto' && position[0] !== 0) {
       const legendHeight = config.items.length * (iconSize[1] + 5) + 20;
       if (legendHeight + position[1] > this.config.maxColumnHeight) {
@@ -267,29 +219,24 @@ class LegendRenderer {
       }
     }
     if (config.title) {
-      container.append('text')
-        .text(config.title)
-        .attr('class', 'legend-title')
-        .attr('text-anchor', 'start')
-        .attr('dx', position[0])
-        .attr('dy', position[1] === 0 ? '1em': position[1] + 15);
+      output.addTitle(config.title, position[0], position[1] === 0 ? '1em': position[1] + 15);
       position[1] += 20;
     }
 
     return config.items.reduce((cur, item) => {
-      return cur.then(() => this.renderLegendItem(svg, item, position));
+      return cur.then(() => this.renderLegendItem(output, item, position));
     }, Promise.resolve());
   }
 
   /**
    * Render all images given by URL and append them to the legend
    * @param {RemoteLegend[]} remoteLegends the array of remote legend objects
-   * @param {Selection} svg the root node
+   * @param {AbstractOutput} output
    * @param {[number, number]} position the current position
    */
   async renderImages(
     remoteLegends: RemoteLegend[],
-    svg: Selection<SVGSVGElement, {}, null, undefined>,
+    output: AbstractOutput,
     position: [number, number]
   ) {
     const legendSpacing = 20;
@@ -327,43 +274,29 @@ class LegendRenderer {
           position[1] = 0;
         }
         if (legendTitle) {
-          const container = svg.append('g');
+          output.useRoot();
           position[1] += legendSpacing;
-          container.append('text')
-            .text(legendTitle)
-            .attr('class', 'legend-title')
-            .attr('text-anchor', 'start')
-            .attr('dx', position[0])
-            .attr('dy', position[1]);
+          output.addTitle(legendTitle, ...position);
           position[1] += titleSpacing;
         }
-        svg.append('svg:image')
-          .attr('x', position[0])
-          .attr('y', position[1])
-          .attr('width', img.width)
-          .attr('height', img.height)
-          .attr('href', base64.toString());
+        output.addImage(base64.toString(), img.width, img.height,...position, false);
 
         position[1] += img.height;
       } catch (err) {
         console.error('Error on fetching legend: ', err);
         continue;
       }
-    };
-    svg.attr('xmlns', 'http://www.w3.org/2000/svg');
+    }
   }
 
-  /**
-   * Renders the configured legend.
-   * @param {HTMLElement} target a node to append the svg to
-   * @return {SVGSVGElement} The final SVG legend
-   */
-  async render(target: HTMLElement) {
+  async renderAsImage(format?: 'svg' | 'png', target?: HTMLElement): Promise<Element> {
     const {
       styles,
       configs,
       size: [width, height],
-      remoteLegends
+      remoteLegends,
+      maxColumnWidth,
+      maxColumnHeight,
     } = this.config;
     const legends: LegendConfiguration[] = [];
     if (styles) {
@@ -372,35 +305,27 @@ class LegendRenderer {
     if (configs) {
       legends.unshift.apply(legends, configs);
     }
-
-    const svgClass = 'geostyler-legend-renderer';
-    const parent = select(target);
-    parent.select(`.${svgClass}`).remove();
-
-    const svg = parent
-      .append('svg')
-      .attr('class', svgClass)
-      .attr('viewBox', `0 0 ${width} ${height}`)
-      .attr('top', 0)
-      .attr('left', 0)
-      .attr('width', width)
-      .attr('height', height);
-
+    const outputClass = format === 'svg' ? SvgOutput : PngOutput;
+    const output = new outputClass([width, height], maxColumnWidth, maxColumnHeight, target);
     const position: [number, number] = [0, 0];
     for (let i = 0; i < legends.length; i++) {
-      await this.renderLegend(legends[i], svg, position);
-    };
+      await this.renderLegend(legends[i], output, position);
+    }
     if (remoteLegends) {
-      await this.renderImages(remoteLegends, svg, position);
+      await this.renderImages(remoteLegends, output, position);
     }
-    const nodes = svg.selectAll('g.legend-item');
-    this.shortenLabels(nodes, this.config.maxColumnWidth);
-    if (!this.config.maxColumnHeight) {
-      svg
-        .attr('viewBox', `0 0 ${width} ${position[1]}`)
-        .attr('height', position[1]);
-    }
-    return svg;
+    return output.generate(position[1]);
+  }
+
+  /**
+   * Renders the configured legend as an SVG or PNG image in the given target container. All pre-existing legends
+   * will be removed.
+   * @param {HTMLElement} target a node to append the svg to
+   * @param format
+   * @return {SVGSVGElement} The final SVG legend
+   */
+  async render(target: HTMLElement, format: 'svg' | 'png' = 'svg') {
+    await this.renderAsImage(format, target);
   }
 }
 export default LegendRenderer;
