@@ -4,6 +4,12 @@ import LegendRenderer from './LegendRenderer';
 import AbstractOutput from './AbstractOutput';
 
 class MockOutput extends AbstractOutput {
+  useContainer = jest.fn();
+  useRoot = jest.fn();
+  addTitle = jest.fn();
+  addLabel = jest.fn();
+  addImage = jest.fn();
+  generate = jest.fn();
   constructor(
     protected size: [number, number],
     protected maxColumnWidth: number | null,
@@ -11,12 +17,6 @@ class MockOutput extends AbstractOutput {
   ) {
     super(size, maxColumnWidth, maxColumnHeight);
   }
-  useContainer = jest.fn();
-  useRoot = jest.fn();
-  addTitle = jest.fn();
-  addLabel = jest.fn();
-  addImage = jest.fn();
-  generate = jest.fn();
 }
 
 describe('LegendRenderer', () => {
@@ -95,7 +95,7 @@ describe('LegendRenderer', () => {
     const renderer = new LegendRenderer({
       size: [0, 0]
     });
-    const output = new MockOutput([0, 0], undefined, undefined);
+    const output = new MockOutput([0, 0], null, null);
     const returnValue = await renderer.renderLegendItem(output, {
       title: 'Example',
       rule: {
@@ -112,7 +112,7 @@ describe('LegendRenderer', () => {
     const renderer = new LegendRenderer({
       size: [0, 0]
     });
-    const output = new MockOutput([0, 0], undefined, undefined);
+    const output = new MockOutput([0, 0], null, null);
     await renderer.renderLegendItem(output, {
       title: 'Example',
       rule: {

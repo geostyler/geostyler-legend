@@ -28,29 +28,6 @@ export default class PngOutput extends AbstractOutput {
     this.createCanvas(...size);
   }
 
-  private createCanvas(width: number, height: number) {
-    this.canvas = document.createElement('canvas');
-    this.canvas.className = ROOT_CLASS;
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.context = this.canvas.getContext('2d');
-    this.context.font = '14px sans-serif';
-
-    if (this.target) {
-      this.target.querySelectorAll(`.${ROOT_CLASS}`).forEach(e => e.remove());
-      this.target.append(this.canvas);
-    }
-  }
-
-  private expandHeight(newHeight: number) {
-    if (this.canvas.height >= newHeight) {
-      return;
-    }
-    const oldCanvas = this.canvas;
-    this.createCanvas(this.canvas.width, newHeight);
-    this.context.drawImage(oldCanvas, 0, 0);
-  }
-
   useContainer(title: string) {}
 
   useRoot() {}
@@ -85,5 +62,28 @@ export default class PngOutput extends AbstractOutput {
 
   generate(finalHeight: number) {
     return this.canvas;
+  }
+
+  private createCanvas(width: number, height: number) {
+    this.canvas = document.createElement('canvas');
+    this.canvas.className = ROOT_CLASS;
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.context = this.canvas.getContext('2d');
+    this.context.font = '14px sans-serif';
+
+    if (this.target) {
+      this.target.querySelectorAll(`.${ROOT_CLASS}`).forEach(e => e.remove());
+      this.target.append(this.canvas);
+    }
+  }
+
+  private expandHeight(newHeight: number) {
+    if (this.canvas.height >= newHeight) {
+      return;
+    }
+    const oldCanvas = this.canvas;
+    this.createCanvas(this.canvas.width, newHeight);
+    this.context.drawImage(oldCanvas, 0, 0);
   }
 }
