@@ -28,7 +28,7 @@ describe('PngOutput', () => {
 
   describe('individual actions', () => {
     beforeEach(() => {
-      output = new PngOutput([500, 700], undefined, undefined);
+      output = new PngOutput([500, 700], null, null);
       instrumentContext(output.context);
     });
 
@@ -68,12 +68,12 @@ describe('PngOutput', () => {
 
   describe('without column constraints', () => {
     beforeEach(() => {
-      output = new PngOutput([500, 700], undefined, undefined);
+      output = new PngOutput([500, 700], null, null);
       makeSampleOutput(output);
     });
     it('generates the right output', () => {
       const canvas = output.generate(SAMPLE_OUTPUT_FINAL_HEIGHT);
-      expect(getContextEvents(canvas.getContext('2d'))).toEqual(SAMPLE_PNG_EVENTS);
+      expect(getContextEvents(canvas.getContext('2d')!)).toEqual(SAMPLE_PNG_EVENTS);
     });
   });
 
@@ -84,7 +84,7 @@ describe('PngOutput', () => {
     });
     it('generates the same output as without constraints', () => {
       const canvas = output.generate(SAMPLE_OUTPUT_FINAL_HEIGHT);
-      expect(getContextEvents(canvas.getContext('2d'))).toEqual(SAMPLE_PNG_EVENTS);
+      expect(getContextEvents(canvas.getContext('2d')!)).toEqual(SAMPLE_PNG_EVENTS);
     });
   });
 
@@ -95,7 +95,7 @@ describe('PngOutput', () => {
     });
     it('resizes the final canvas', () => {
       const canvas = output.generate(SAMPLE_OUTPUT_FINAL_HEIGHT);
-      expect(getContextEvents(canvas.getContext('2d'))).toEqual(SAMPLE_PNG_EVENTS_HEIGHT_TOO_LOW);
+      expect(getContextEvents(canvas.getContext('2d')!)).toEqual(SAMPLE_PNG_EVENTS_HEIGHT_TOO_LOW);
     });
   });
 
@@ -107,7 +107,7 @@ describe('PngOutput', () => {
     });
     it('appends the output to the target element', () => {
       output.generate(123);
-      expect(root.children.item(0).outerHTML).toEqual(
+      expect(root.children.item(0)?.outerHTML).toEqual(
         '<canvas class="geostyler-legend-renderer" width="500" height="700"></canvas>'
       );
     });

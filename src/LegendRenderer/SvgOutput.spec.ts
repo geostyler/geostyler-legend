@@ -134,7 +134,7 @@ describe('SvgOutput', () => {
     });
     it('appends the output to the target element', () => {
       output.generate(123);
-      expect(root.children.item(0).outerHTML).toEqual(
+      expect(root.children.item(0)?.outerHTML).toEqual(
         '<svg class="geostyler-legend-renderer" viewBox="0 0 500 700" top="0" left="0" width="500" height="700"></svg>'
       );
     });

@@ -283,6 +283,7 @@ class LegendRenderer {
 
         position[1] += img.height;
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error('Error on fetching legend: ', err);
         continue;
       }

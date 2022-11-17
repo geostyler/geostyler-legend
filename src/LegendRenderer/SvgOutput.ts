@@ -9,8 +9,8 @@ export default class SvgOutput extends AbstractOutput {
 
   constructor(
     size: [number, number],
-    maxColumnWidth: number | null,
-    maxColumnHeight: number | null,
+    maxColumnWidth: number | undefined,
+    maxColumnHeight: number | undefined,
     target?: HTMLElement,
   ) {
     super(size, maxColumnWidth, maxColumnHeight);
@@ -84,6 +84,17 @@ export default class SvgOutput extends AbstractOutput {
     this.root.attr('xmlns', 'http://www.w3.org/2000/svg');
   };
 
+  generate(finalHeight: number) {
+    const nodes = this.root.selectAll('g.legend-item');
+    this.shortenLabels(nodes, this.maxColumnWidth);
+    if (!this.maxColumnHeight) {
+      this.root
+        .attr('viewBox', `0 0 ${this.size[0]} ${finalHeight}`)
+        .attr('height', finalHeight);
+    }
+    return this.root.node() as SVGElement;
+  }
+
   /**
    * Shortens the labels if they overflow.
    * @param {Selection} nodes the legend item group nodes
@@ -112,16 +123,5 @@ export default class SvgOutput extends AbstractOutput {
         text.text(str + '...');
       }
     });
-  }
-
-  generate(finalHeight: number) {
-    const nodes = this.root.selectAll('g.legend-item');
-    this.shortenLabels(nodes, this.maxColumnWidth);
-    if (!this.maxColumnHeight) {
-      this.root
-        .attr('viewBox', `0 0 ${this.size[0]} ${finalHeight}`)
-        .attr('height', finalHeight);
-    }
-    return this.root.node() as SVGElement;
   }
 }
