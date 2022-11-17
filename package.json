@@ -37,7 +37,7 @@
   },
   "peerDependencies": {
     "d3": ">=6",
-    "ol": ">=7"
+    "ol": ">=6"
   },
   "devDependencies": {
     "@babel/core": "^7.14.5",
