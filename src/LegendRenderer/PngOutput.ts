@@ -52,7 +52,9 @@ export default class PngOutput extends AbstractOutput {
     const yPx = cssDimensionToPx(y);
     this.expandHeight(yPx + imgHeight);
     const image = new Image();
+    const imageLoaded = new Promise(resolve => image.onload = resolve);
     image.src = dataUrl;
+    await imageLoaded;
     this.context.drawImage(image, xPx, yPx, imgWidth, imgHeight);
     if (drawRect) {
       this.context.strokeStyle = '1px solid black';
