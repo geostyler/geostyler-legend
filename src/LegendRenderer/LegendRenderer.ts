@@ -102,8 +102,8 @@ class LegendRenderer {
     if (item.rule) {
       output.useContainer(item.title);
       return this.getRuleIcon(item.rule)
-        .then((uri) => {
-          output.addImage(uri, ...iconSize, position[0] + 1, position[1], !hideRect);
+        .then(async (uri) => {
+          await output.addImage(uri, ...iconSize, position[0] + 1, position[1], !hideRect);
           output.addLabel(item.title, position[0] + iconSize[0] + 5, position[1] + 20);
           position[1] += iconSize[1] + 5;
           if (maxColumnHeight && position[1] + iconSize[1] + 5 >= maxColumnHeight) {
@@ -279,7 +279,7 @@ class LegendRenderer {
           output.addTitle(legendTitle, ...position);
           position[1] += titleSpacing;
         }
-        output.addImage(base64.toString(), img.width, img.height,...position, false);
+        await output.addImage(base64.toString(), img.width, img.height,...position, false);
 
         position[1] += img.height;
       } catch (err) {

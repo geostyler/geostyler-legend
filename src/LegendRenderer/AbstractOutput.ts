@@ -15,7 +15,7 @@ abstract class AbstractOutput {
     x: number|string,
     y: number|string,
     drawRect: boolean,
-  ): void;
+  ): Promise<void>;
   abstract generate(finalHeight: number): Element;
 }
 export default AbstractOutput;

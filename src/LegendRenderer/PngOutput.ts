@@ -40,7 +40,7 @@ export default class PngOutput extends AbstractOutput {
     this.context.fillText(text, cssDimensionToPx(x), cssDimensionToPx(y));
   }
 
-  addImage(
+  async addImage(
     dataUrl: string,
     imgWidth: number,
     imgHeight: number,
