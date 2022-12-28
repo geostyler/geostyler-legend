@@ -8,12 +8,6 @@ import {
   SAMPLE_PNG_EVENTS_HEIGHT_TOO_LOW
 } from '../fixtures/outputs';
 
-function instrumentContext(context: CanvasRenderingContext2D) {
-  context.drawImage = jest.fn(context.drawImage) as any;
-  context.fillText = jest.fn(context.fillText) as any;
-  context.strokeRect = jest.fn(context.strokeRect) as any;
-}
-
 function getContextEvents(context: CanvasRenderingContext2D) {
   // eslint-disable-next-line no-underscore-dangle
   return (context as any).__getEvents();
@@ -29,7 +23,9 @@ describe('PngOutput', () => {
   describe('individual actions', () => {
     beforeEach(() => {
       output = new PngOutput([500, 700], null, null);
-      instrumentContext(output.context);
+      jest.spyOn(output.context, 'drawImage');
+      jest.spyOn(output.context, 'fillText');
+      jest.spyOn(output.context, 'strokeRect');
     });
 
     describe('#addTitle', () => {
