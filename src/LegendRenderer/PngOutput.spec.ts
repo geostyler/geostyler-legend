@@ -2,17 +2,11 @@
 
 import PngOutput from './PngOutput';
 import {
-  makeSampleOutput,
+  makeSampleOutput, SAMPLE_IMAGE_SRC,
   SAMPLE_OUTPUT_FINAL_HEIGHT,
   SAMPLE_PNG_EVENTS,
   SAMPLE_PNG_EVENTS_HEIGHT_TOO_LOW
 } from '../fixtures/outputs';
-
-function instrumentContext(context: CanvasRenderingContext2D) {
-  context.drawImage = jest.fn(context.drawImage) as any;
-  context.fillText = jest.fn(context.fillText) as any;
-  context.strokeRect = jest.fn(context.strokeRect) as any;
-}
 
 function getContextEvents(context: CanvasRenderingContext2D) {
   // eslint-disable-next-line no-underscore-dangle
@@ -29,7 +23,9 @@ describe('PngOutput', () => {
   describe('individual actions', () => {
     beforeEach(() => {
       output = new PngOutput([500, 700], null, null);
-      instrumentContext(output.context);
+      jest.spyOn(output.context, 'drawImage');
+      jest.spyOn(output.context, 'fillText');
+      jest.spyOn(output.context, 'strokeRect');
     });
 
     describe('#addTitle', () => {
@@ -47,19 +43,19 @@ describe('PngOutput', () => {
       });
     });
     describe('#addImage', () => {
-      it('inserts an image (no frame)', () => {
-        output.addImage('bla', 100, 50, 200, 250, false);
+      it('inserts an image (no frame)', async () => {
+        await output.addImage(SAMPLE_IMAGE_SRC, 100, 50, 200, 250, false);
         const calledImg = (output.context.drawImage as any).mock.calls[0][0];
         expect(output.context.drawImage).toHaveBeenCalledWith(expect.any(Image), 200, 250, 100, 50);
-        expect(calledImg.src).toBe('http://localhost/bla');
+        expect(calledImg.src).toBe(SAMPLE_IMAGE_SRC);
         expect(output.context.strokeRect).not.toHaveBeenCalled();
         expect(output.context.strokeStyle).toEqual('#000000');
       });
-      it('inserts an image (with frame)', () => {
-        output.addImage('bla', 100, 50, 200, 250, true);
+      it('inserts an image (with frame)', async() => {
+        await output.addImage(SAMPLE_IMAGE_SRC, 100, 50, 200, 250, true);
         const calledImg = (output.context.drawImage as any).mock.calls[0][0];
         expect(output.context.drawImage).toHaveBeenCalledWith(expect.any(Image), 200, 250, 100, 50);
-        expect(calledImg.src).toBe('http://localhost/bla');
+        expect(calledImg.src).toBe(SAMPLE_IMAGE_SRC);
         expect(output.context.strokeRect).toHaveBeenCalledWith(200, 250, 100, 50);
         expect(output.context.strokeStyle).toEqual('#000000');
       });
@@ -67,9 +63,9 @@ describe('PngOutput', () => {
   });
 
   describe('without column constraints', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       output = new PngOutput([500, 700], null, null);
-      makeSampleOutput(output);
+      await makeSampleOutput(output);
     });
     it('generates the right output', () => {
       const canvas = output.generate(SAMPLE_OUTPUT_FINAL_HEIGHT);
@@ -78,9 +74,9 @@ describe('PngOutput', () => {
   });
 
   describe('with column constraints', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       output = new PngOutput([500, 700], 50, 200);
-      makeSampleOutput(output);
+      await makeSampleOutput(output);
     });
     it('generates the same output as without constraints', () => {
       const canvas = output.generate(SAMPLE_OUTPUT_FINAL_HEIGHT);
@@ -88,10 +84,10 @@ describe('PngOutput', () => {
     });
   });
 
-  describe('with a height too low', () => {
-    beforeEach(() => {
+  describe('with a height too low',  () => {
+    beforeEach(async () => {
       output = new PngOutput([500, 200], 50, 200);
-      makeSampleOutput(output);
+      await makeSampleOutput(output);
     });
     it('resizes the final canvas', () => {
       const canvas = output.generate(SAMPLE_OUTPUT_FINAL_HEIGHT);

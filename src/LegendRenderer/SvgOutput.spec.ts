@@ -95,9 +95,9 @@ describe('SvgOutput', () => {
   });
 
   describe('without column constraints', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       output = new SvgOutput([500, 700], undefined, undefined);
-      makeSampleOutput(output);
+      await makeSampleOutput(output);
     });
     it('generates the right output', () => {
       expect(output.generate(SAMPLE_OUTPUT_FINAL_HEIGHT).outerHTML).toEqual(SAMPLE_SVG);
@@ -105,9 +105,9 @@ describe('SvgOutput', () => {
   });
 
   describe('with column constraints', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       output = new SvgOutput([500, 700], 50, 200);
-      makeSampleOutput(output);
+      await makeSampleOutput(output);
     });
     it('generates the right output', () => {
       expect(output.generate(SAMPLE_OUTPUT_FINAL_HEIGHT).outerHTML).toEqual(SAMPLE_SVG_COLUMN_CONSTRAINTS);
@@ -115,9 +115,9 @@ describe('SvgOutput', () => {
   });
 
   describe('with a height too low', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       output = new SvgOutput([500, 200], 50, 200);
-      makeSampleOutput(output);
+      await makeSampleOutput(output);
     });
     it('sets the height on the final canvas', () => {
       expect(output.generate(SAMPLE_OUTPUT_FINAL_HEIGHT).outerHTML).toEqual(SAMPLE_SVG_COLUMN_CONSTRAINTS
