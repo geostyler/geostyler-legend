@@ -82,7 +82,7 @@ export default class SvgOutput extends AbstractOutput {
       .attr('height', imgHeight)
       .attr('href', dataUrl);
     this.root.attr('xmlns', 'http://www.w3.org/2000/svg');
-    return Promise.resolve()
+    return Promise.resolve();
   };
 
   generate(finalHeight: number) {
