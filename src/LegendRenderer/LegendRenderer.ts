@@ -48,7 +48,7 @@ const iconSize: [number, number] = [45, 30];
 /**
  * A class that can be used to render legends as images.
  */
-class LegendRenderer {
+export class LegendRenderer {
 
   config: LegendsConfiguration = null;
 
