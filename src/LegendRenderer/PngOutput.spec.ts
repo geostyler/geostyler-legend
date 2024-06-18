@@ -7,6 +7,7 @@ import {
   SAMPLE_PNG_EVENTS,
   SAMPLE_PNG_EVENTS_HEIGHT_TOO_LOW
 } from '../fixtures/outputs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 function getContextEvents(context: CanvasRenderingContext2D) {
   // eslint-disable-next-line no-underscore-dangle
@@ -23,9 +24,9 @@ describe('PngOutput', () => {
   describe('individual actions', () => {
     beforeEach(() => {
       output = new PngOutput([500, 700], null, null);
-      jest.spyOn(output.context, 'drawImage');
-      jest.spyOn(output.context, 'fillText');
-      jest.spyOn(output.context, 'strokeRect');
+      vi.spyOn(output.context, 'drawImage');
+      vi.spyOn(output.context, 'fillText');
+      vi.spyOn(output.context, 'strokeRect');
     });
 
     describe('#addTitle', () => {

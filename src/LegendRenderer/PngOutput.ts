@@ -71,7 +71,7 @@ export default class PngOutput extends AbstractOutput {
     this.canvas.className = ROOT_CLASS;
     this.canvas.width = width;
     this.canvas.height = height;
-    this.context = this.canvas.getContext('2d');
+    this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
     this.context.font = '14px sans-serif';
 
     if (this.target) {
