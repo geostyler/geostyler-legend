@@ -4,9 +4,6 @@
   "description": "A simple legend component for geostyler-stlye.",
   "type": "module",
   "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "browser": "dist/geoStylerLegend.iife.js",
   "scripts": {
     "prerelease": "npm run build",
     "release": "np --no-yarn && git push git@github.com:geostyler/geostyler-legend.git master --tags",
@@ -36,7 +33,7 @@
   "homepage": "https://github.com/geostyler/geostyler-legend#readme",
   "dependencies": {
     "@types/d3-selection": "^3.0.1",
-    "geostyler-openlayers-parser": "5.0.0-next.5"
+    "geostyler-openlayers-parser": "5.0.0-next.6"
   },
   "peerDependencies": {
     "d3": ">=6",
