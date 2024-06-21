@@ -1,0 +1,21 @@
+## [5.0.0-next.1](https://github.com/geostyler/geostyler-legend/compare/v4.0.1...v5.0.0-next.1) (2024-06-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* Switches to an esm build, so you might need to
+adapt your imports and reconfigure your bundler.
+* Built file locations are different, so you may need
+to update your imports.
+
+### Features
+
+* add semantic release ([5a3df14](https://github.com/geostyler/geostyler-legend/commit/5a3df14ddadcf63a99e38582a757959cef4858bd))
+* use vite & esm build ([634d9d4](https://github.com/geostyler/geostyler-legend/commit/634d9d4796680ca7956b3b33a4efd76ec7a5379a))
+
+
+### Bug Fixes
+
+* cleanup package.json ([6dc07c9](https://github.com/geostyler/geostyler-legend/commit/6dc07c9fd6171a6691368085af48878032bfff69))
+* **deps:** update dependency @types/d3-selection to v3.0.10 ([0297309](https://github.com/geostyler/geostyler-legend/commit/02973093295a4bb53814a1f879af4b941587fb86))
+* remove dependabot ([94f8442](https://github.com/geostyler/geostyler-legend/commit/94f8442bdca41fe7f7f08f2bc466e44814e8289d))
