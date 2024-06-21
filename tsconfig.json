@@ -14,7 +14,7 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "outDir": "dist",
-    "rootDir": ".",
+    "rootDir": "src",
     "sourceMap": true,
     "strictNullChecks": true,
     "target": "ES2022",
