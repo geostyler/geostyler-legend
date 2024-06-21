@@ -1,3 +1,10 @@
+## [5.0.0-next.2](https://github.com/geostyler/geostyler-legend/compare/v5.0.0-next.1...v5.0.0-next.2) (2024-06-21)
+
+
+### Bug Fixes
+
+* exclude src folder in build ([26bc5dc](https://github.com/geostyler/geostyler-legend/commit/26bc5dcae43ff3e3c505e27ea5b76f5eea50d3bf))
+
 ## [5.0.0-next.1](https://github.com/geostyler/geostyler-legend/compare/v4.0.1...v5.0.0-next.1) (2024-06-21)
 
 
