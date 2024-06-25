@@ -52,7 +52,7 @@
     "@vitest/coverage-istanbul": "^1.6.0",
     "canvas": "2.11.2",
     "conventional-changelog-conventionalcommits": "^7.0.2",
-    "d3": "^6.7.0",
+    "d3": "^7.0.0",
     "eslint": "^8.18.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
