@@ -1,3 +1,10 @@
+## [5.0.0-next.3](https://github.com/geostyler/geostyler-legend/compare/v5.0.0-next.2...v5.0.0-next.3) (2024-06-25)
+
+
+### Bug Fixes
+
+* remove coveralls ([9b1256a](https://github.com/geostyler/geostyler-legend/commit/9b1256a41f5ad1e390d3a167a26584f8cead7502))
+
 ## [5.0.0-next.2](https://github.com/geostyler/geostyler-legend/compare/v5.0.0-next.1...v5.0.0-next.2) (2024-06-21)
 
 
