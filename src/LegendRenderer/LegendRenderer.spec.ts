@@ -2,14 +2,15 @@
 
 import LegendRenderer from './LegendRenderer';
 import AbstractOutput from './AbstractOutput';
+import { describe, expect, it, vi } from 'vitest';
 
 class MockOutput extends AbstractOutput {
-  useContainer = jest.fn();
-  useRoot = jest.fn();
-  addTitle = jest.fn();
-  addLabel = jest.fn();
-  addImage = jest.fn();
-  generate = jest.fn();
+  useContainer = vi.fn();
+  useRoot = vi.fn();
+  addTitle = vi.fn();
+  addLabel = vi.fn();
+  addImage = vi.fn();
+  generate = vi.fn();
   constructor(
     protected size: [number, number],
     protected maxColumnWidth: number | null,
@@ -147,7 +148,6 @@ describe('LegendRenderer', () => {
       const texts = dom.querySelectorAll('text');
       expect(texts[0].textContent).toBe('Example');
       expect(texts[1].textContent).toBe('Item 1');
-      done();
     });
   });
 
@@ -172,6 +172,7 @@ describe('LegendRenderer', () => {
       }]
     });
     const dom: any = document.createElement('div');
+    // @ts-expect-error mock is just missing a few properties that are not needed
     global.fetch = jest.fn(() =>
       Promise.resolve({
         blob: () => Promise.resolve(new Blob(

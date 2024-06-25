@@ -4,8 +4,8 @@ import AbstractOutput from './AbstractOutput';
 const ROOT_CLASS = 'geostyler-legend-renderer';
 
 export default class SvgOutput extends AbstractOutput {
-  root: Selection<SVGSVGElement, {}, null, undefined> = null;
-  currentContainer: Selection<SVGGElement, {}, null, undefined> = null;
+  root: Selection<SVGSVGElement, unknown, null, undefined> | null | undefined = null;
+  currentContainer: Selection<SVGGElement, unknown, null, undefined> | null | undefined = null;
 
   constructor(
     size: [number, number],
@@ -13,7 +13,7 @@ export default class SvgOutput extends AbstractOutput {
     maxColumnHeight: number | undefined,
     target?: HTMLElement,
   ) {
-    super(size, maxColumnWidth, maxColumnHeight);
+    super(size, maxColumnWidth || 0, maxColumnHeight || 0);
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg') as SVGSVGElement;
 
@@ -28,12 +28,12 @@ export default class SvgOutput extends AbstractOutput {
 
     if (target) {
       select(target).select(`.${ROOT_CLASS}`).remove();
-      target.append(this.root.node());
+      target.append(this.root.node() as Node);
     }
   }
 
   useContainer(title: string) {
-    this.currentContainer = this.root.append('g')
+    this.currentContainer = this.root?.append('g')
       .attr('class', 'legend-item')
       .attr('title', title);
   };
@@ -43,7 +43,7 @@ export default class SvgOutput extends AbstractOutput {
   }
 
   addTitle(text: string, x: number | string, y: number | string) {
-    this.currentContainer.append('g').append('text')
+    this.currentContainer?.append('g').append('text')
       .text(text)
       .attr('class', 'legend-title')
       .attr('text-anchor', 'start')
@@ -52,7 +52,7 @@ export default class SvgOutput extends AbstractOutput {
   };
 
   addLabel(text: string, x: number | string, y: number | string) {
-    this.currentContainer.append('text')
+    this.currentContainer?.append('text')
       .text(text)
       .attr('x', x)
       .attr('y', y);
@@ -67,7 +67,7 @@ export default class SvgOutput extends AbstractOutput {
     drawRect: boolean,
   ) {
     if (drawRect) {
-      this.currentContainer.append('rect')
+      this.currentContainer?.append('rect')
         .attr('x', x)
         .attr('y', y)
         .attr('width', imgWidth)
@@ -75,25 +75,25 @@ export default class SvgOutput extends AbstractOutput {
         .style('fill-opacity', 0)
         .style('stroke', 'black');
     }
-    this.currentContainer.append('svg:image')
+    this.currentContainer?.append('svg:image')
       .attr('x', x)
       .attr('y', y)
       .attr('width', imgWidth)
       .attr('height', imgHeight)
       .attr('href', dataUrl);
-    this.root.attr('xmlns', 'http://www.w3.org/2000/svg');
+    this.root?.attr('xmlns', 'http://www.w3.org/2000/svg');
     return Promise.resolve();
   };
 
   generate(finalHeight: number) {
-    const nodes = this.root.selectAll('g.legend-item');
-    this.shortenLabels(nodes, this.maxColumnWidth);
+    const nodes = this.root?.selectAll('g.legend-item');
+    this.shortenLabels(nodes, this.maxColumnWidth || 0);
     if (!this.maxColumnHeight) {
       this.root
-        .attr('viewBox', `0 0 ${this.size[0]} ${finalHeight}`)
+        ?.attr('viewBox', `0 0 ${this.size[0]} ${finalHeight}`)
         .attr('height', finalHeight);
     }
-    return this.root.node() as SVGElement;
+    return this.root?.node() as SVGElement;
   }
 
   /**
@@ -101,8 +101,8 @@ export default class SvgOutput extends AbstractOutput {
    * @param {Selection} nodes the legend item group nodes
    * @param {number} maxWidth the maximum column width
    */
-  private shortenLabels(nodes: Selection<BaseType, {}, SVGElement, {}>, maxWidth: number) {
-    nodes.each(function() {
+  private shortenLabels(nodes: Selection<BaseType, unknown, SVGElement, {}> | undefined, maxWidth: number) {
+    nodes?.each(function() {
       const node = select(this);
       const text = node.select('text');
       if (!(node.node() instanceof SVGElement) || !text.size()) {

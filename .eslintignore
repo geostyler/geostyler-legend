@@ -11,3 +11,4 @@ build
 
 .eslintrc.js
 *.config.js
+outputs.ts

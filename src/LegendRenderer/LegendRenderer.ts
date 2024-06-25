@@ -10,8 +10,8 @@ import {
   Style,
   Symbolizer,
   Rule
-} from 'geostyler-style';
-import OlStyleParser from 'geostyler-openlayers-parser';
+} from 'geostyler-style/dist/style';
+import OlStyleParser from 'geostyler-openlayers-parser/dist/OlStyleParser';
 import OlFeature from 'ol/Feature';
 import SvgOutput from './SvgOutput';
 import AbstractOutput from './AbstractOutput';
@@ -50,7 +50,7 @@ const iconSize: [number, number] = [45, 30];
  */
 export class LegendRenderer {
 
-  config: LegendsConfiguration = null;
+  config: LegendsConfiguration | null = null;
 
   /**
    * Constructs a new legend renderer.
@@ -92,6 +92,9 @@ export class LegendRenderer {
     item: LegendItemConfiguration,
     position: [number, number]
   ) {
+    if (!this.config) {
+      return;
+    }
 
     const {
       hideRect,
@@ -108,7 +111,7 @@ export class LegendRenderer {
           position[1] += iconSize[1] + 5;
           if (maxColumnHeight && position[1] + iconSize[1] + 5 >= maxColumnHeight) {
             position[1] = 5;
-            position[0] += maxColumnWidth;
+            position[0] += maxColumnWidth || 0;
           }
         })
         .catch(() => {
@@ -158,7 +161,7 @@ export class LegendRenderer {
     const pixelRatio = 1;
     const context = canvas.getContext('2d');
     const transform = createTransform();
-    const renderer = new Renderer(context, pixelRatio, extent, transform, 0);
+    const renderer = new Renderer(context as CanvasRenderingContext2D, pixelRatio, extent, transform, 0);
     const geoms: OlGeometry[] = [];
     rule.symbolizers.forEach(symbolizer => geoms.push(this.getGeometryForSymbolizer(symbolizer)));
 
@@ -189,6 +192,7 @@ export class LegendRenderer {
             drawGeoms();
           });
         } else {
+          // @ts-expect-error TODO fix type errors
           renderer.setStyle(olStyle);
           drawGeoms();
         }
@@ -210,10 +214,15 @@ export class LegendRenderer {
     output: AbstractOutput,
     position: [number, number]
   ) {
+    if (!this.config) {
+      return;
+    }
     output.useRoot();
     if (this.config.overflow !== 'auto' && position[0] !== 0) {
       const legendHeight = config.items.length * (iconSize[1] + 5) + 20;
+      // @ts-expect-error TODO fix type errors
       if (legendHeight + position[1] > this.config.maxColumnHeight) {
+      // @ts-expect-error TODO fix type errors
         position[0] += this.config.maxColumnWidth;
         position[1] = 0;
       }
@@ -252,7 +261,9 @@ export class LegendRenderer {
             try {
               const fileReader = new FileReader();
               fileReader.onload = async (e) => {
+                // @ts-expect-error TODO fix type errors
                 const result = e.target.result;
+                // @ts-expect-error TODO fix type errors
                 resolve(result) ;
               };
               fileReader.readAsDataURL(imageBlob) ;
@@ -267,9 +278,12 @@ export class LegendRenderer {
         img.src = base64.toString();
         await img.decode();
 
+        // @ts-expect-error TODO fix type errors
         if (this.config.overflow === 'auto' &&
             img.height + legendSpacing + titleSpacing +
+            // @ts-expect-error TODO fix type errors
             position[1] > this.config.maxColumnHeight) {
+          // @ts-expect-error TODO fix type errors
           position[0] += this.config.maxColumnWidth;
           position[1] = 0;
         }
@@ -291,6 +305,9 @@ export class LegendRenderer {
   }
 
   async renderAsImage(format?: 'svg' | 'png', target?: HTMLElement): Promise<Element> {
+    if (!this.config) {
+      return Promise.reject();
+    }
     const {
       styles,
       configs,
@@ -307,7 +324,7 @@ export class LegendRenderer {
       legends.unshift.apply(legends, configs);
     }
     const outputClass = format === 'svg' ? SvgOutput : PngOutput;
-    const output = new outputClass([width, height], maxColumnWidth, maxColumnHeight, target);
+    const output = new outputClass([width, height], maxColumnWidth || 0, maxColumnHeight || 0, target);
     const position: [number, number] = [0, 0];
     for (let i = 0; i < legends.length; i++) {
       await this.renderLegend(legends[i], output, position);
