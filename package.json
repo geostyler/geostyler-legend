@@ -33,7 +33,7 @@
   "homepage": "https://github.com/geostyler/geostyler-legend#readme",
   "dependencies": {
     "@types/d3-selection": "^3.0.1",
-    "geostyler-openlayers-parser": "5.0.0-next.6"
+    "geostyler-openlayers-parser": "5.0.0"
   },
   "peerDependencies": {
     "d3": ">=6",
