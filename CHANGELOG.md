@@ -1,3 +1,10 @@
+## [5.0.1](https://github.com/geostyler/geostyler-legend/compare/v5.0.0...v5.0.1) (2024-11-27)
+
+
+### Bug Fixes
+
+* update geostyler dependencies ([b5bcebc](https://github.com/geostyler/geostyler-legend/commit/b5bcebce21eccd607839cce75e1b924cecd1c974))
+
 ## [5.0.0](https://github.com/geostyler/geostyler-legend/compare/v4.0.1...v5.0.0) (2024-06-25)
 
 
