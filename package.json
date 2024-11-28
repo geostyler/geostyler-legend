@@ -56,7 +56,7 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "extensionless": "^1.9.9",
-    "geostyler-style": "9.2.0",
+    "geostyler-style": "^9.2.0",
     "jsdom": "^24.1.0",
     "ol": "^9.1.0",
     "rimraf": "^3.0.2",
