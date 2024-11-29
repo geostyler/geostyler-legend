@@ -5,6 +5,10 @@ import OlGeomPolygon from 'ol/geom/Polygon';
 import OlGeomLineString from 'ol/geom/LineString';
 import OlStyle from 'ol/style/Style';
 import Renderer from 'ol/render/canvas/Immediate';
+import {
+  isRule,
+  isSymbolizer
+} from 'geostyler-style';
 import { create as createTransform } from 'ol/transform';
 import {
   Style,
@@ -126,6 +130,10 @@ export class LegendRenderer {
    * @param {Symbolizer} symbolizer the symbolizer object
    */
   getGeometryForSymbolizer(symbolizer: Symbolizer): OlGeometry {
+    if (!isSymbolizer(symbolizer)) {
+      throw new Error('Invalid symbolizer');
+    }
+
     const kind = symbolizer.kind;
     switch (kind) {
       case 'Mark':
@@ -154,6 +162,10 @@ export class LegendRenderer {
    * @param {Object} rule the geostyler rule
    */
   getRuleIcon(rule: Rule): Promise<string> {
+    if (!isRule(rule)) {
+      return Promise.reject('Invalid rule');
+    }
+
     const canvas = document.createElement('canvas');
     canvas.setAttribute('width', `${iconSize[0]}`);
     canvas.setAttribute('height', `${iconSize[1]}`);
@@ -163,6 +175,7 @@ export class LegendRenderer {
     const transform = createTransform();
     const renderer = new Renderer(context as CanvasRenderingContext2D, pixelRatio, extent, transform, 0);
     const geoms: OlGeometry[] = [];
+
     rule.symbolizers.forEach(symbolizer => geoms.push(this.getGeometryForSymbolizer(symbolizer)));
 
     const styleParser = new OlStyleParser();
