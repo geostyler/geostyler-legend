@@ -152,6 +152,9 @@ export class LegendRenderer {
           [iconSize[0] / 2, iconSize[1] / 3],
           [iconSize[0] / 6 * 5, iconSize[1] / 6 * 5]
         ]);
+      case 'Raster': {
+        throw new Error('Not implemented yet: "Raster" case');
+      }
       default:
         return new OlGeomPoint([iconSize[0] / 2, iconSize[1] / 2]);
     }

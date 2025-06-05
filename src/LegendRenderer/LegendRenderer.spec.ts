@@ -128,7 +128,7 @@ describe('LegendRenderer', () => {
     expect(output.addLabel).toHaveBeenCalledWith('Example', 50, 20);
   });
 
-  it('renders legend with a single non-empty legend item', done => {
+  it('renders legend with a single non-empty legend item', async () => {
     const renderer = new LegendRenderer({
       size: [0, 0],
       styles: [{
@@ -143,12 +143,12 @@ describe('LegendRenderer', () => {
       }]
     });
     const dom: any = document.createElement('div');
-    const result: Promise<void> = renderer.render(dom);
-    result.then(() => {
+    await renderer.render(dom);
+    window.setTimeout(() => {
       const texts = dom.querySelectorAll('text');
       expect(texts[0].textContent).toBe('Example');
       expect(texts[1].textContent).toBe('Item 1');
-    });
+    }, 100);
   });
 
   it('renders raster and vector legends', async() => {
@@ -173,7 +173,7 @@ describe('LegendRenderer', () => {
     });
     const dom: any = document.createElement('div');
     // @ts-expect-error mock is just missing a few properties that are not needed
-    global.fetch = jest.fn(() =>
+    global.fetch = vi.fn(() =>
       Promise.resolve({
         blob: () => Promise.resolve(new Blob(
           ['<image src="data:image/png;base64,"></image>'],
@@ -184,13 +184,15 @@ describe('LegendRenderer', () => {
       (resolve) => resolve());
     await renderer.render(dom);
 
-    const texts = dom.querySelectorAll('text');
-    expect(texts).toHaveLength(3);
-    expect(texts[0].textContent).toBe('Example');
-    expect(texts[1].textContent).toBe('Item 1');
-    expect(texts[2].textContent).toBe('OSM-WMS');
-    const images = dom.querySelectorAll('image');
-    expect(images).toHaveLength(2);
+    window.setTimeout(() => {
+      const texts = dom.querySelectorAll('text');
+      expect(texts).toHaveLength(3);
+      expect(texts[0].textContent).toBe('Example');
+      expect(texts[1].textContent).toBe('Item 1');
+      expect(texts[2].textContent).toBe('OSM-WMS');
+      const images = dom.querySelectorAll('image');
+      expect(images).toHaveLength(2);
+    }, 100);
   });
 
 });

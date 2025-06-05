@@ -13,24 +13,14 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v4
 
-    - name: Use Node.js 20.x
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20.x
-
-    - name: Cache Node.js modules 💾
-      uses: actions/cache@v4
-      with:
-        path: ~/.npm
-        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-node-
-          ${{ runner.OS }}-
+    - name: Set up bun
+      uses: oven-sh/setup-bun@v2
 
     - name: Install dependencies ⏬
       run: |
-        sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-        npm ci
+        sudo apt -y update
+        sudo apt install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+        bun install
 
     - name: Generate coverage 🧪
-      run: npm run test
+      run: bun test --coverage --coverage-reporter=lcov
