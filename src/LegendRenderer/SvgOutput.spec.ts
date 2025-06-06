@@ -1,6 +1,7 @@
 /* eslint-env jest */
 
 import SvgOutput from './SvgOutput';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   makeSampleOutput,
   SAMPLE_SVG,

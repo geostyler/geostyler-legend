@@ -6,38 +6,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [20.x, 22.x]
-
     steps:
     - name: Checkout sources
       uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-
-    - name: Cache Node.js modules 💾
-      uses: actions/cache@v4
-      with:
-        path: ~/.npm
-        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-node-
-          ${{ runner.OS }}-
+    - name: Set up bun
+      uses: oven-sh/setup-bun@v2
 
     - name: Install dependencies ⏬
       run: |
-        sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-        npm ci
+        sudo apt -y update
+        sudo apt install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+        bun install
 
     - name: Lint code 💄
-      run: npm run lint
+      run: bun run lint
 
     - name: Test code ✅
-      run: npm run test
+      run: bun test
 
     - name: Build artifacts 🏗️
-      run: npm run build
+      run: bun run build

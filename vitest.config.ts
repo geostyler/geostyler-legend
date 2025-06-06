@@ -27,7 +27,6 @@ export default defineConfig({
         resources: 'usable',
       },
     },
-    setupFiles: ['./setupTests.ts'],
   },
   resolve: {
     extensions: ['.js', '.svg', '.ts', '.tsx', '.jsx']

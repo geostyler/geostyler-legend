@@ -1,4 +1,5 @@
 import AbstractOutput from '../LegendRenderer/AbstractOutput';
+import { expect } from 'vitest';
 
 // a single pixel
 // eslint-disable-next-line max-len
