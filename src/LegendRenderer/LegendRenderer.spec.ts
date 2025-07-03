@@ -104,8 +104,8 @@ describe('LegendRenderer', () => {
         symbolizers: [{
           kind: 'Icon'
         }]
-      }
-    }, [0, 0]);
+      },
+    }, [0, 0], [45, 30]);
     expect(returnValue).toBeUndefined();
   });
 
@@ -123,9 +123,9 @@ describe('LegendRenderer', () => {
           wellKnownName: 'circle'
         }]
       }
-    }, [0, 0]);
+    }, [0, 0], [45, 30]);
     expect(output.useContainer).toHaveBeenCalledWith('Example');
-    expect(output.addLabel).toHaveBeenCalledWith('Example', 50, 20);
+    expect(output.addLabel).toHaveBeenCalledWith('Example', 50, (30 / 2) + 5);
   });
 
   it('renders legend with a single non-empty legend item', async () => {

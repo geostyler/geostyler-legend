@@ -7,14 +7,12 @@ import OlStyle from 'ol/style/Style';
 import Renderer from 'ol/render/canvas/Immediate';
 import {
   isRule,
-  isSymbolizer
+  isSymbolizer,
+  Rule,
+  Style,
+  Symbolizer
 } from 'geostyler-style';
 import { create as createTransform } from 'ol/transform';
-import {
-  Style,
-  Symbolizer,
-  Rule
-} from 'geostyler-style/dist/style';
 import OlStyleParser from 'geostyler-openlayers-parser/dist/OlStyleParser';
 import OlFeature from 'ol/Feature';
 import SvgOutput from './SvgOutput';
@@ -45,9 +43,10 @@ interface LegendsConfiguration {
   maxColumnWidth?: number;
   overflow?: 'auto' | 'group';
   hideRect?: boolean;
+  iconSize?: [number, number];
 }
 
-const iconSize: [number, number] = [45, 30];
+const defaultIconSize: [number, number] = [45, 30];
 
 /**
  * A class that can be used to render legends as images.
@@ -55,6 +54,7 @@ const iconSize: [number, number] = [45, 30];
 export class LegendRenderer {
 
   config: LegendsConfiguration | null = null;
+  private _iconSize: [number, number];
 
   /**
    * Constructs a new legend renderer.
@@ -62,6 +62,8 @@ export class LegendRenderer {
    */
   constructor(config: LegendsConfiguration) {
     this.config = config;
+    this.config.iconSize = this.config.iconSize ?? defaultIconSize;
+    this._iconSize = this.config.iconSize;
   }
 
   /**
@@ -90,11 +92,13 @@ export class LegendRenderer {
    * @param {AbstractOutput} output
    * @param {LegendItemConfiguration} item configuration of the legend item
    * @param {[number, number]} position the current position
+   * @param {[number, number]} iconSize the icon size defined in config
    */
   renderLegendItem(
     output: AbstractOutput,
     item: LegendItemConfiguration,
-    position: [number, number]
+    position: [number, number],
+    iconSize: [number, number],
   ) {
     if (!this.config) {
       return;
@@ -111,7 +115,7 @@ export class LegendRenderer {
       return this.getRuleIcon(item.rule)
         .then(async (uri) => {
           await output.addImage(uri, ...iconSize, position[0] + 1, position[1], !hideRect);
-          output.addLabel(item.title, position[0] + iconSize[0] + 5, position[1] + 20);
+          output.addLabel(item.title, position[0] + iconSize[0] + 5, position[1] + (iconSize[1] / 2) + 5);
           position[1] += iconSize[1] + 5;
           if (maxColumnHeight && position[1] + iconSize[1] + 5 >= maxColumnHeight) {
             position[1] = 5;
@@ -139,24 +143,24 @@ export class LegendRenderer {
       case 'Mark':
       case 'Icon':
       case 'Text':
-        return new OlGeomPoint([iconSize[0] / 2, iconSize[1] / 2]);
+        return new OlGeomPoint([this._iconSize[0] / 2, this._iconSize[1] / 2]);
       case 'Fill':
         return new OlGeomPolygon([[
-          [3, 3], [iconSize[0] - 3, 3], [iconSize[0] - 3, iconSize[1] - 3],
-          [3, iconSize[1] - 3], [3, 3]
+          [3, 3], [this._iconSize[0] - 3, 3], [this._iconSize[0] - 3, this._iconSize[1] - 3],
+          [3, this._iconSize[1] - 3], [3, 3]
         ]]);
       case 'Line':
         return new OlGeomLineString([
-          [iconSize[0] / 6, iconSize[1] / 6],
-          [iconSize[0] / 3, iconSize[1] / 3 * 2],
-          [iconSize[0] / 2, iconSize[1] / 3],
-          [iconSize[0] / 6 * 5, iconSize[1] / 6 * 5]
+          [this._iconSize[0] / 6, this._iconSize[1] / 6],
+          [this._iconSize[0] / 3, this._iconSize[1] / 3 * 2],
+          [this._iconSize[0] / 2, this._iconSize[1] / 3],
+          [this._iconSize[0] / 6 * 5, this._iconSize[1] / 6 * 5]
         ]);
       case 'Raster': {
         throw new Error('Not implemented yet: "Raster" case');
       }
       default:
-        return new OlGeomPoint([iconSize[0] / 2, iconSize[1] / 2]);
+        return new OlGeomPoint([this._iconSize[0] / 2, this._iconSize[1] / 2]);
     }
   }
 
@@ -170,9 +174,9 @@ export class LegendRenderer {
     }
 
     const canvas = document.createElement('canvas');
-    canvas.setAttribute('width', `${iconSize[0]}`);
-    canvas.setAttribute('height', `${iconSize[1]}`);
-    const extent = boundingExtent([[0, 0], [iconSize[0], iconSize[1]]]);
+    canvas.setAttribute('width', `${this._iconSize[0]}`);
+    canvas.setAttribute('height', `${this._iconSize[1]}`);
+    const extent = boundingExtent([[0, 0], [this._iconSize[0], this._iconSize[1]]]);
     const pixelRatio = 1;
     const context = canvas.getContext('2d');
     const transform = createTransform();
@@ -235,7 +239,7 @@ export class LegendRenderer {
     }
     output.useRoot();
     if (this.config.overflow !== 'auto' && position[0] !== 0) {
-      const legendHeight = config.items.length * (iconSize[1] + 5) + 20;
+      const legendHeight = config.items.length * (this._iconSize[1] + 5) + 20;
       // @ts-expect-error TODO fix type errors
       if (legendHeight + position[1] > this.config.maxColumnHeight) {
       // @ts-expect-error TODO fix type errors
@@ -249,7 +253,7 @@ export class LegendRenderer {
     }
 
     return config.items.reduce((cur, item) => {
-      return cur.then(() => this.renderLegendItem(output, item, position));
+      return cur.then(() => this.renderLegendItem(output, item, position, this._iconSize));
     }, Promise.resolve());
   }
 
