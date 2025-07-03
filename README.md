@@ -23,7 +23,8 @@ In order to render a legend, you construct a legend renderer like this:
         maxColumnHeight: 300,
         overflow: 'auto',
         styles: [style],
-        size: [600, 300]
+        size: [600, 300],
+        iconSize: [15, 15]
       });
       renderer.render(someElement);
 ```
@@ -41,6 +42,8 @@ on a new legend.
 
 If the `maxColumnHeight` property is not set, the renderer will render just
 one column with all the legends, thus ignoring the size parameter for the height.
+
+The `size` and `iconSize` parameters refer to the legend overlay size and the legend icons size respectively.
 
 ## Development
 
