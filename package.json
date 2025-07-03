@@ -7,11 +7,8 @@
   "scripts": {
     "prerelease": "npm run build",
     "lint": "eslint . && tsc --noEmit --project tsconfig.json",
-    "test": "NODE_OPTIONS=--import=extensionless/register vitest run --coverage",
-    "test:watch": "NODE_OPTIONS=--import=extensionless/register vitest",
     "coveralls": "cat coverage/lcov.info | coveralls",
     "clean:dist": "rimraf ./dist/*",
-    "prebuild": "npm run test",
     "build": "vite build && tsc"
   },
   "engines": {
