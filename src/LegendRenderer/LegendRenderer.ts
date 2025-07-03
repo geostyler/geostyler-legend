@@ -7,14 +7,12 @@ import OlStyle from 'ol/style/Style';
 import Renderer from 'ol/render/canvas/Immediate';
 import {
   isRule,
-  isSymbolizer
+  isSymbolizer,
+  Rule,
+  Style,
+  Symbolizer
 } from 'geostyler-style';
 import { create as createTransform } from 'ol/transform';
-import {
-  Style,
-  Symbolizer,
-  Rule
-} from 'geostyler-style/dist/style';
 import OlStyleParser from 'geostyler-openlayers-parser/dist/OlStyleParser';
 import OlFeature from 'ol/Feature';
 import SvgOutput from './SvgOutput';
