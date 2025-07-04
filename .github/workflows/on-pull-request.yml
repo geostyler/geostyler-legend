@@ -23,7 +23,7 @@ jobs:
       run: bun run lint
 
     - name: Test code ✅
-      run: bun test
+      run: bun test --coverage --coverage-reporter=lcov
 
     - name: Build artifacts 🏗️
       run: bun run build
