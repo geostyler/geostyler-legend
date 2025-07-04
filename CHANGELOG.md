@@ -1,3 +1,16 @@
+## [5.1.0](https://github.com/geostyler/geostyler-legend/compare/v5.0.1...v5.1.0) (2025-07-04)
+
+### Features
+
+* add icon size parameter in renderer configuration options object ([e94c803](https://github.com/geostyler/geostyler-legend/commit/e94c8039d88ffa106195453be3866aecf603b568))
+* update dependencies and switch to bun ([33f3756](https://github.com/geostyler/geostyler-legend/commit/33f37560598a53de809da306689124c88221a480))
+* update geostyler-openlayer-parser dependency ([06e2ba7](https://github.com/geostyler/geostyler-legend/commit/06e2ba737f290bee5fd0219d220f2b8ec2c52aa6))
+
+### Bug Fixes
+
+* add some basic type checks ([25eb984](https://github.com/geostyler/geostyler-legend/commit/25eb9845b03c180122417acb8ce8ec75138bc46f))
+* **doc:** provide an updated sample code and document parameters ([4aff953](https://github.com/geostyler/geostyler-legend/commit/4aff9532c66dbb0a40832ed8599c37d3f2b03533))
+
 ## [5.0.1](https://github.com/geostyler/geostyler-legend/compare/v5.0.0...v5.0.1) (2024-11-27)
 
 
