@@ -10,7 +10,7 @@ function cssDimensionToPx(dimension: string | number, legendItemTextSize: number
   document.body.append(div);
   div.style.height = dimension;
   if (legendItemTextSize) {
-    div.style.fontSize = legendItemTextSize + "px";
+    div.style.fontSize = legendItemTextSize + 'px';
   }
   const height = parseFloat(getComputedStyle(div).height.replace(/px$/, ''));
   div.remove();
@@ -23,7 +23,7 @@ export default class PngOutput extends AbstractOutput {
 
   constructor(
     size: [number, number],
-    maxColumnWidth: number | null,
+    maxColumnWidth: number | null | 'fit-content',
     maxColumnHeight: number | null,
     legendItemTextSize: number | undefined,
     private target?: HTMLElement,
@@ -40,8 +40,9 @@ export default class PngOutput extends AbstractOutput {
     this.context.fillText(text, cssDimensionToPx(x), cssDimensionToPx(y));
   }
 
-  addLabel(text: string, x: number | string, y: number | string, legendItemTextSize: number | undefined) {
+  addLabel(text: string, x: number | string, y: number | string, legendItemTextSize: number | undefined): number {
     this.context.fillText(text, cssDimensionToPx(x), cssDimensionToPx(y), legendItemTextSize);
+    return this.context.measureText(text).width;
   }
 
   async addImage(
