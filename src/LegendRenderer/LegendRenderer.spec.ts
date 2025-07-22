@@ -14,9 +14,10 @@ class MockOutput extends AbstractOutput {
   constructor(
     protected size: [number, number],
     protected maxColumnWidth: number | null,
-    protected maxColumnHeight: number | null
+    protected maxColumnHeight: number | null,
+    protected legendItemTextSize: number | undefined
   ) {
-    super(size, maxColumnWidth, maxColumnHeight);
+    super(size, maxColumnWidth, maxColumnHeight, legendItemTextSize);
   }
 }
 
@@ -96,7 +97,7 @@ describe('LegendRenderer', () => {
     const renderer = new LegendRenderer({
       size: [0, 0]
     });
-    const output = new MockOutput([0, 0], null, null);
+    const output = new MockOutput([0, 0], null, null, undefined);
     const returnValue = await renderer.renderLegendItem(output, {
       title: 'Example',
       rule: {
@@ -113,7 +114,7 @@ describe('LegendRenderer', () => {
     const renderer = new LegendRenderer({
       size: [0, 0]
     });
-    const output = new MockOutput([0, 0], null, null);
+    const output = new MockOutput([0, 0], null, null, undefined);
     await renderer.renderLegendItem(output, {
       title: 'Example',
       rule: {
@@ -125,7 +126,7 @@ describe('LegendRenderer', () => {
       }
     }, [0, 0], [45, 30]);
     expect(output.useContainer).toHaveBeenCalledWith('Example');
-    expect(output.addLabel).toHaveBeenCalledWith('Example', 50, (30 / 2) + 5);
+    expect(output.addLabel).toHaveBeenCalledWith('Example', 50, (30 / 2) + 5, undefined);
   });
 
   it('renders legend with a single non-empty legend item', async () => {

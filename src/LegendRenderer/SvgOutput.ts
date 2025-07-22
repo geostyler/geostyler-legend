@@ -1,18 +1,18 @@
-import { BaseType, select, Selection } from 'd3-selection';
+import { BaseType, create, select, Selection } from 'd3-selection';
 import AbstractOutput from './AbstractOutput';
 
 const ROOT_CLASS = 'geostyler-legend-renderer';
 
 function textToPx(text: string, legendItemTextSize: number | undefined): number {
-  const span = document.createElement("span");
-  document.body.append(span);
-  span.innerText = text;
-  if (legendItemTextSize) {
-    span.style.fontSize = legendItemTextSize + "px";
+  const legendItemTextSizeString = legendItemTextSize === undefined ?
+    getComputedStyle(document.body).fontSize : legendItemTextSize + 'px';
+  const canvas = document.createElement('canvas');
+  const canvasContext = canvas.getContext('2d');
+  if (canvasContext){
+    canvasContext.font = legendItemTextSizeString + ' ' +  getComputedStyle(document.body).fontFamily;
+    return canvasContext.measureText(text).width;
   }
-  const width = span.offsetWidth;
-  span.remove();
-  return width;
+  return 0;
 }
 
 export default class SvgOutput extends AbstractOutput {
@@ -122,18 +122,18 @@ export default class SvgOutput extends AbstractOutput {
   ) {
     nodes?.each(function () {
       const node = select(this);
-      const text = node.select("text");
+      const text = node.select('text');
       if (!(node.node() instanceof SVGElement) || !text.size()) {
         return;
       }
       const originalStr = text.text();
       const elem: Element = <Element>text.node();
       const xPosition = parseFloat(elem.getAttribute('x') ?? '0');
-      const xModuloPosition = xPosition % maxWidth;
+      const xModuloPosition = isNaN(xPosition % maxWidth) ? 0 : xPosition % maxWidth;
       let width = textToPx(originalStr ?? '', legendItemTextSize);
       width = width + xModuloPosition;
       let adapted = false;
-      while (width > maxWidth - 5) {
+      while (width > maxWidth && width !== 0) {
         let str = text.text();
         str = str.substring(0, str.length - 1);
         text.text(str);
@@ -143,8 +143,15 @@ export default class SvgOutput extends AbstractOutput {
       }
       if (adapted) {
         let str = text.text();
-        const title = node.append('title');
-        title.text(originalStr);
+        if (node.node() instanceof Element) {
+          const titleNode = create('title');
+          titleNode.text(originalStr);
+          if (elem.nextSibling) {
+            (node.node() as Element)?.insertBefore(titleNode.node()!, elem.nextSibling);
+          } else {
+            elem.parentNode?.append(titleNode.node()!);
+          }
+        }
         str = str.substring(0, str.length - 3);
         text.text(str + '...');
       }
