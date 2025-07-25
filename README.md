@@ -25,7 +25,6 @@ In order to render a legend, you construct a legend renderer like this:
         styles: [style],
         size: [600, 300],
         iconSize: [15, 15],
-        iconSize: [15, 15],
         legendItemTextSize: 14
       });
       renderer.render(someElement);
@@ -47,7 +46,7 @@ one column with all the legends, thus ignoring the size parameter for the height
 
 The `size` and `iconSize` parameters refer to the legend overlay size and the legend icons size respectively.
 
-The `legendItemTextSize` refers to the legend item associated text font size. It's optionnal.
+The `legendItemTextSize` refers to the legend item's associated text font size. It's optional.
 
 ## Development
 

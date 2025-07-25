@@ -65,11 +65,15 @@ export default class SvgOutput extends AbstractOutput {
   }
 
   addLabel(text: string, x: number | string, y: number | string, legendItemTextSize: number | undefined) {
-    this.currentContainer?.append('text')
-      .text(text)
-      .attr('x', x)
-      .attr('y', y)
-      .style('font-size', legendItemTextSize + 'px');
+    const textElement = this.currentContainer?.append('text');
+    if (textElement) {
+      textElement.text(text)
+        .attr('x', x)
+        .attr('y', y);
+      if (legendItemTextSize !== undefined) {
+        textElement.style('font-size', legendItemTextSize + 'px');
+      }
+    }
   };
 
   addImage(

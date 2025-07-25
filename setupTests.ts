@@ -6,7 +6,6 @@ const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
   resources: 'usable'
 });
 
-
 global.window = dom.window;
 global.document = dom.window.document;
 global.navigator = dom.window.navigator;
