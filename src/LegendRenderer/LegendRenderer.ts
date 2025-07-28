@@ -45,6 +45,7 @@ interface LegendsConfiguration {
   overflow?: 'auto' | 'group';
   hideRect?: boolean;
   iconSize?: [number, number];
+  legendItemTextSize?: number;
 }
 
 const defaultIconSize: [number, number] = [45, 30];
@@ -108,7 +109,8 @@ export class LegendRenderer {
     const {
       hideRect,
       maxColumnHeight,
-      maxColumnWidth
+      maxColumnWidth,
+      legendItemTextSize
     } = this.config;
 
     if (item.rule) {
@@ -116,7 +118,8 @@ export class LegendRenderer {
       return this.getRuleIcon(item.rule)
         .then(async (uri) => {
           await output.addImage(uri, ...iconSize, position[0] + 1, position[1], !hideRect);
-          output.addLabel(item.title, position[0] + iconSize[0] + 5, position[1] + (iconSize[1] / 2) + 5);
+          output.addLabel(item.title, position[0] + iconSize[0] + 5,
+            position[1] + (iconSize[1] / 2) + 5, legendItemTextSize);
           position[1] += iconSize[1] + 5;
           if (maxColumnHeight && position[1] + iconSize[1] + 5 >= maxColumnHeight) {
             position[1] = 5;
@@ -391,6 +394,7 @@ export class LegendRenderer {
       remoteLegends,
       maxColumnWidth,
       maxColumnHeight,
+      legendItemTextSize
     } = this.config;
     const legends: LegendConfiguration[] = [];
     if (styles) {
@@ -400,7 +404,8 @@ export class LegendRenderer {
       legends.unshift.apply(legends, configs);
     }
     const outputClass = format === 'svg' ? SvgOutput : PngOutput;
-    const output = new outputClass([width, height], maxColumnWidth || 0, maxColumnHeight || 0, target);
+    const output = new outputClass([width, height], maxColumnWidth || 0, maxColumnHeight || 0,
+      legendItemTextSize, target);
     const position: [number, number] = [0, 0];
     for (let i = 0; i < legends.length; i++) {
       await this.renderLegend(legends[i], output, position);

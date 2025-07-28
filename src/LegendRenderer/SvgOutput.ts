@@ -1,7 +1,19 @@
-import {BaseType, select, Selection} from 'd3-selection';
+import { BaseType, create, select, Selection } from 'd3-selection';
 import AbstractOutput from './AbstractOutput';
 
 const ROOT_CLASS = 'geostyler-legend-renderer';
+
+function textToPx(text: string, legendItemTextSize: number | undefined): number {
+  const legendItemTextSizeString = legendItemTextSize === undefined ?
+    getComputedStyle(document.body).fontSize : legendItemTextSize + 'px';
+  const canvas = document.createElement('canvas');
+  const canvasContext = canvas.getContext('2d');
+  if (canvasContext){
+    canvasContext.font = legendItemTextSizeString + ' ' +  getComputedStyle(document.body).fontFamily;
+    return canvasContext.measureText(text).width;
+  }
+  return 0;
+}
 
 export default class SvgOutput extends AbstractOutput {
   root: Selection<SVGSVGElement, unknown, null, undefined> | null | undefined = null;
@@ -11,9 +23,10 @@ export default class SvgOutput extends AbstractOutput {
     size: [number, number],
     maxColumnWidth: number | undefined,
     maxColumnHeight: number | undefined,
-    target?: HTMLElement,
+    legendItemTextSize: number | undefined,
+    target?: HTMLElement
   ) {
-    super(size, maxColumnWidth || 0, maxColumnHeight || 0);
+    super(size, maxColumnWidth || 0, maxColumnHeight || 0, legendItemTextSize);
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg') as SVGSVGElement;
 
@@ -40,7 +53,7 @@ export default class SvgOutput extends AbstractOutput {
 
   useRoot() {
     this.currentContainer = this.root;
-  }
+  };
 
   addTitle(text: string, x: number | string, y: number | string) {
     this.currentContainer?.append('g').append('text')
@@ -49,22 +62,27 @@ export default class SvgOutput extends AbstractOutput {
       .attr('text-anchor', 'start')
       .attr('dx', x)
       .attr('dy', y);
-  };
+  }
 
-  addLabel(text: string, x: number | string, y: number | string) {
-    this.currentContainer?.append('text')
-      .text(text)
-      .attr('x', x)
-      .attr('y', y);
+  addLabel(text: string, x: number | string, y: number | string, legendItemTextSize: number | undefined) {
+    const textElement = this.currentContainer?.append('text');
+    if (textElement) {
+      textElement.text(text)
+        .attr('x', x)
+        .attr('y', y);
+      if (legendItemTextSize !== undefined) {
+        textElement.style('font-size', legendItemTextSize + 'px');
+      }
+    }
   };
 
   addImage(
     dataUrl: string,
     imgWidth: number,
     imgHeight: number,
-    x: number|string,
-    y: number|string,
-    drawRect: boolean,
+    x: number | string,
+    y: number | string,
+    drawRect: boolean
   ) {
     if (drawRect) {
       this.currentContainer?.append('rect')
@@ -87,7 +105,7 @@ export default class SvgOutput extends AbstractOutput {
 
   generate(finalHeight: number) {
     const nodes = this.root?.selectAll('g.legend-item');
-    this.shortenLabels(nodes, this.maxColumnWidth || 0);
+    this.shortenLabels(nodes, this.maxColumnWidth || 0, this.legendItemTextSize);
     if (!this.maxColumnHeight) {
       this.root
         ?.attr('viewBox', `0 0 ${this.size[0]} ${finalHeight}`)
@@ -101,25 +119,43 @@ export default class SvgOutput extends AbstractOutput {
    * @param {Selection} nodes the legend item group nodes
    * @param {number} maxWidth the maximum column width
    */
-  private shortenLabels(nodes: Selection<BaseType, unknown, SVGElement, {}> | undefined, maxWidth: number) {
-    nodes?.each(function() {
+  private shortenLabels(
+    nodes: Selection<BaseType, unknown, SVGElement, {}> | undefined,
+    maxWidth: number,
+    legendItemTextSize: number | undefined
+  ) {
+    nodes?.each(function () {
       const node = select(this);
       const text = node.select('text');
       if (!(node.node() instanceof SVGElement) || !text.size()) {
         return;
       }
-      const elem: Element = <Element> (text.node());
-      let width = elem.getBoundingClientRect().width;
+      const originalStr = text.text();
+      const elem: Element = <Element>text.node();
+      const xPosition = parseFloat(elem.getAttribute('x') ?? '0');
+      const xModuloPosition = isNaN(xPosition % maxWidth) ? 0 : xPosition % maxWidth;
+      let width = textToPx(originalStr ?? '', legendItemTextSize);
+      width = width + xModuloPosition;
       let adapted = false;
-      while (width > maxWidth) {
+      while (width > maxWidth && width !== 0) {
         let str = text.text();
         str = str.substring(0, str.length - 1);
         text.text(str);
-        width = elem.getBoundingClientRect().width;
+        width = textToPx(str, legendItemTextSize);
+        width = width + xModuloPosition;
         adapted = true;
       }
       if (adapted) {
         let str = text.text();
+        if (node.node() instanceof Element) {
+          const titleNode = create('title');
+          titleNode.text(originalStr);
+          if (elem.nextSibling) {
+            (node.node() as Element)?.insertBefore(titleNode.node()!, elem.nextSibling);
+          } else {
+            elem.parentNode?.append(titleNode.node()!);
+          }
+        }
         str = str.substring(0, str.length - 3);
         text.text(str + '...');
       }

@@ -2,13 +2,16 @@ import AbstractOutput from './AbstractOutput';
 
 const ROOT_CLASS = 'geostyler-legend-renderer';
 
-function cssDimensionToPx(dimension: string | number): number {
+function cssDimensionToPx(dimension: string | number, legendItemTextSize: number | undefined = undefined): number {
   if (typeof dimension === 'number') {
     return dimension;
   }
   const div = document.createElement('div');
   document.body.append(div);
   div.style.height = dimension;
+  if (legendItemTextSize) {
+    div.style.fontSize = legendItemTextSize + "px";
+  }
   const height = parseFloat(getComputedStyle(div).height.replace(/px$/, ''));
   div.remove();
   return height;
@@ -22,9 +25,10 @@ export default class PngOutput extends AbstractOutput {
     size: [number, number],
     maxColumnWidth: number | null,
     maxColumnHeight: number | null,
+    legendItemTextSize: number | undefined,
     private target?: HTMLElement,
   ) {
-    super(size, maxColumnWidth, maxColumnHeight);
+    super(size, maxColumnWidth, maxColumnHeight, legendItemTextSize);
     this.createCanvas(...size);
   }
 
@@ -36,8 +40,8 @@ export default class PngOutput extends AbstractOutput {
     this.context.fillText(text, cssDimensionToPx(x), cssDimensionToPx(y));
   }
 
-  addLabel(text: string, x: number | string, y: number | string) {
-    this.context.fillText(text, cssDimensionToPx(x), cssDimensionToPx(y));
+  addLabel(text: string, x: number | string, y: number | string, legendItemTextSize: number | undefined) {
+    this.context.fillText(text, cssDimensionToPx(x), cssDimensionToPx(y), legendItemTextSize);
   }
 
   async addImage(

@@ -24,7 +24,7 @@ describe('PngOutput', () => {
 
   describe('individual actions', () => {
     beforeEach(() => {
-      output = new PngOutput([500, 700], null, null);
+      output = new PngOutput([500, 700], null, null, undefined);
       vi.spyOn(output.context, 'drawImage');
       vi.spyOn(output.context, 'fillText');
       vi.spyOn(output.context, 'strokeRect');
@@ -39,8 +39,8 @@ describe('PngOutput', () => {
     });
     describe('#addLabel', () => {
       it('inserts a label', () => {
-        output.addLabel('My Label', 100, 150);
-        expect(output.context.fillText).toHaveBeenCalledWith('My Label', 100, 150);
+        output.addLabel('My Label', 100, 150, 14);
+        expect(output.context.fillText).toHaveBeenCalledWith('My Label', 100, 150, 14);
         expect(output.context.fillStyle).toEqual('#000000');
       });
     });
@@ -101,7 +101,7 @@ describe('PngOutput', () => {
     let root: HTMLDivElement;
     beforeEach(() => {
       root = document.createElement('div');
-      output = new PngOutput([500, 700], 250, 500, root);
+      output = new PngOutput([500, 700], 250, 500, undefined, root);
     });
     it('appends the output to the target element', () => {
       output.generate(123);
