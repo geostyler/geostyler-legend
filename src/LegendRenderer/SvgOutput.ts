@@ -135,6 +135,7 @@ export default class SvgOutput extends AbstractOutput {
           textToPx(textNode.text(), legendItemTextSize);
         finalWidth = nodeWidth > finalWidth ? nodeWidth : finalWidth;
       });
+      finalWidth += 5;
     }
     if (!this.maxColumnHeight) {
       this.root

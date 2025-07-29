@@ -94,7 +94,8 @@ export class LegendRenderer {
     item: LegendItemConfiguration,
     position: [number, number],
     iconSize: [number, number],
-    autoMaxColumnWidth: number
+    autoMaxColumnWidth: number,
+    withTitle: boolean
   ) {
     if (!this.config) {
       return;
@@ -135,7 +136,11 @@ export class LegendRenderer {
             maxColumnHeight &&
             position[1] + iconSize[1] + 5 >= maxColumnHeight
           ) {
-            position[1] = 5;
+            if (withTitle) {
+              position[1] = 20;
+            } else {
+              position[1] = 5;
+            }
             if (maxColumnWidth === 'fit-content') {
               position[0] = autoMaxColumnWidth;
             } else {
@@ -329,7 +334,8 @@ export class LegendRenderer {
   renderLegend(
     config: LegendConfiguration,
     output: AbstractOutput,
-    position: [number, number]
+    position: [number, number],
+    autoMaxColumnWidth: number | undefined | void
   ) {
     if (!this.config) {
       return;
@@ -339,8 +345,12 @@ export class LegendRenderer {
       const legendHeight = config.items.length * (this._iconSize[1] + 5) + 20;
       // @ts-expect-error TODO fix type errors
       if (legendHeight + position[1] > this.config.maxColumnHeight) {
-        // @ts-expect-error TODO fix type errors
-        position[0] += this.config.maxColumnWidth;
+        if (typeof this.config.maxColumnWidth === 'number') {
+          position[0] +=
+            this.config.maxColumnWidth;
+        } else {
+          position[0] = typeof autoMaxColumnWidth === 'number' ? autoMaxColumnWidth + 5 : 0;
+        }
         position[1] = 0;
       }
     }
@@ -352,7 +362,7 @@ export class LegendRenderer {
       );
       position[1] += 20;
     }
-    let autoMaxColumnWidth: number | undefined = 0;
+    // let autoMaxColumnWidth: number | undefined = 0;
     return config.items.reduce((cur, item) => {
       return cur.then(async () => {
         autoMaxColumnWidth = await this.renderLegendItem(
@@ -360,8 +370,10 @@ export class LegendRenderer {
           item,
           position,
           this._iconSize,
-          autoMaxColumnWidth ?? 0
+          autoMaxColumnWidth ?? 0,
+          config.title != null && config.title !== ''
         );
+        return autoMaxColumnWidth;
       });
     }, Promise.resolve());
   }
@@ -473,8 +485,9 @@ export class LegendRenderer {
     const output = new outputClass([width, height], maxColumnWidth || 0, maxColumnHeight || 0,
       legendItemTextSize, target);
     const position: [number, number] = [0, 0];
+    let autoMaxColumnWidth: number | void | undefined = 0;
     for (let i = 0; i < legends.length; i++) {
-      await this.renderLegend(legends[i], output, position);
+      autoMaxColumnWidth = await this.renderLegend(legends[i], output, position, autoMaxColumnWidth);
     }
     if (remoteLegends) {
       await this.renderImages(remoteLegends, output, position);

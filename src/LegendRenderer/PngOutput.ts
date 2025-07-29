@@ -41,6 +41,8 @@ export default class PngOutput extends AbstractOutput {
   }
 
   addLabel(text: string, x: number | string, y: number | string, legendItemTextSize: number | undefined): number {
+    const xPx = cssDimensionToPx(x);
+    this.expandWidth(xPx + this.context.measureText(text).width);
     this.context.fillText(text, cssDimensionToPx(x), cssDimensionToPx(y), legendItemTextSize);
     return this.context.measureText(text).width;
   }
@@ -56,6 +58,7 @@ export default class PngOutput extends AbstractOutput {
     const xPx = cssDimensionToPx(x);
     const yPx = cssDimensionToPx(y);
     this.expandHeight(yPx + imgHeight);
+    this.expandWidth(xPx + imgWidth);
     const image = new Image();
     const imageLoaded = new Promise(resolve => image.onload = resolve);
     image.src = dataUrl;
@@ -91,6 +94,15 @@ export default class PngOutput extends AbstractOutput {
     }
     const oldCanvas = this.canvas;
     this.createCanvas(this.canvas.width, newHeight);
+    this.context.drawImage(oldCanvas, 0, 0);
+  }
+
+  private expandWidth(newWidth: number) {
+    if (this.canvas.width >= newWidth) {
+      return;
+    }
+    const oldCanvas = this.canvas;
+    this.createCanvas(newWidth, this.canvas.height);
     this.context.drawImage(oldCanvas, 0, 0);
   }
 }
