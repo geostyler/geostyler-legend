@@ -48,6 +48,28 @@ The `size` and `iconSize` parameters refer to the legend overlay size and the le
 
 The `legendItemTextSize` refers to the legend item's associated text font size. It's optional.
 
+You can use this package to export your legend as image. To do that, if you don't know how many 
+legend item you will have, you can define `maxColumnWidth` to `'fit-content'`. This option permits to 
+auto define width of each column depending on its content. if this option is enabled, the first number in 
+`size` array will be ignored.
+
+Example :
+
+```typescript
+      const renderer = new LegendRenderer({
+        maxColumnWidth: 'fit-content',
+        maxColumnHeight: 300,
+        overflow: 'auto',
+        styles: [style],
+        size: [600, 300],
+        iconSize: [15, 15],
+        legendItemTextSize: 14
+      });
+      renderer.render(someElement);
+```
+
+Of course, you can use this option in html rendering context too.
+
 ## Development
 
 If you want to contribute, you can build the project like this:
