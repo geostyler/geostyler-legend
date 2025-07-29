@@ -1,21 +1,18 @@
-import { BaseType, select, Selection } from 'd3-selection';
+import { BaseType, create, select, Selection } from 'd3-selection';
 import AbstractOutput from './AbstractOutput';
 
 const ROOT_CLASS = 'geostyler-legend-renderer';
 
-function textToPx(
-  text: string,
-  legendItemTextSize: number | undefined
-): number {
-  const span = document.createElement('span');
-  document.body.append(span);
-  span.innerText = text;
-  if (legendItemTextSize) {
-    span.style.fontSize = legendItemTextSize + 'px';
+function textToPx(text: string, legendItemTextSize: number | undefined): number {
+  const legendItemTextSizeString = legendItemTextSize === undefined ?
+    getComputedStyle(document.body).fontSize : legendItemTextSize + 'px';
+  const canvas = document.createElement('canvas');
+  const canvasContext = canvas.getContext('2d');
+  if (canvasContext){
+    canvasContext.font = legendItemTextSizeString + ' ' +  getComputedStyle(document.body).fontFamily;
+    return canvasContext.measureText(text).width;
   }
-  const width = span.offsetWidth;
-  span.remove();
-  return width;
+  return 0;
 }
 
 export default class SvgOutput extends AbstractOutput {
@@ -64,7 +61,7 @@ export default class SvgOutput extends AbstractOutput {
 
   useRoot() {
     this.currentContainer = this.root;
-  }
+  };
 
   addTitle(text: string, x: number | string, y: number | string) {
     this.currentContainer
@@ -77,20 +74,18 @@ export default class SvgOutput extends AbstractOutput {
       .attr('dy', y);
   }
 
-  addLabel(
-    text: string,
-    x: number | string,
-    y: number | string,
-    legendItemTextSize: number | undefined
-  ): number {
-    this.currentContainer
-      ?.append('text')
-      .text(text)
-      .attr('x', x)
-      .attr('y', y)
-      .style('font-size', legendItemTextSize + 'px');
+  addLabel(text: string, x: number | string, y: number | string, legendItemTextSize: number | undefined) {
+    const textElement = this.currentContainer?.append('text');
+    if (textElement) {
+      textElement.text(text)
+        .attr('x', x)
+        .attr('y', y);
+      if (legendItemTextSize !== undefined) {
+        textElement.style('font-size', legendItemTextSize + 'px');
+      }
+    }
     return textToPx(text, legendItemTextSize);
-  }
+  };
 
   addImage(
     dataUrl: string,
@@ -175,11 +170,11 @@ export default class SvgOutput extends AbstractOutput {
       const originalStr = text.text();
       const elem: Element = <Element>text.node();
       const xPosition = parseFloat(elem.getAttribute('x') ?? '0');
-      const xModuloPosition = xPosition % maxWidth;
+      const xModuloPosition = isNaN(xPosition % maxWidth) ? 0 : xPosition % maxWidth;
       let width = textToPx(originalStr ?? '', legendItemTextSize);
       width = width + xModuloPosition;
       let adapted = false;
-      while (width > maxWidth - 5) {
+      while (width > maxWidth && width !== 0) {
         let str = text.text();
         str = str.substring(0, str.length - 1);
         text.text(str);
@@ -189,8 +184,15 @@ export default class SvgOutput extends AbstractOutput {
       }
       if (adapted) {
         let str = text.text();
-        const title = node.append('title');
-        title.text(originalStr);
+        if (node.node() instanceof Element) {
+          const titleNode = create('title');
+          titleNode.text(originalStr);
+          if (elem.nextSibling) {
+            (node.node() as Element)?.insertBefore(titleNode.node()!, elem.nextSibling);
+          } else {
+            elem.parentNode?.append(titleNode.node()!);
+          }
+        }
         str = str.substring(0, str.length - 3);
         text.text(str + '...');
       }

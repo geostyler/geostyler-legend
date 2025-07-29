@@ -3,6 +3,7 @@ import OlGeometry from 'ol/geom/Geometry';
 import OlGeomPoint from 'ol/geom/Point';
 import OlGeomPolygon from 'ol/geom/Polygon';
 import OlGeomLineString from 'ol/geom/LineString';
+import OlImageState from 'ol/ImageState';
 import OlStyle from 'ol/style/Style';
 import Renderer from 'ol/render/canvas/Immediate';
 import { isRule, isSymbolizer, Rule, Style, Symbolizer } from 'geostyler-style';
@@ -99,8 +100,12 @@ export class LegendRenderer {
       return;
     }
 
-    const { hideRect, maxColumnHeight, maxColumnWidth, legendItemTextSize } =
-      this.config;
+    const {
+      hideRect,
+      maxColumnHeight,
+      maxColumnWidth,
+      legendItemTextSize
+    } = this.config;
 
     if (item.rule) {
       output.useContainer(item.title);
@@ -229,6 +234,7 @@ export class LegendRenderer {
         },
       ],
     };
+
     return new Promise(async (resolve, reject) => {
       function drawGeoms() {
         geoms.forEach((geom: OlGeometry) => renderer.drawGeometry(geom));
@@ -244,11 +250,17 @@ export class LegendRenderer {
           olStyle = <OlStyle | OlStyle[]>olStyle(new OlFeature(geoms[0]), 1);
         }
         if (Array.isArray(olStyle)) {
+          // Trigger loading of all images and wait for them to complete loading
+          await Promise.all(olStyle.map((styleItem) => this.loadStyleImage(styleItem)));
+
           olStyle.forEach((styleItem: OlStyle) => {
             renderer.setStyle(styleItem);
             drawGeoms();
           });
         } else {
+          // Trigger loading of image and wait for it to complete loading
+          await this.loadStyleImage(olStyle);
+
           // @ts-expect-error TODO fix type errors
           renderer.setStyle(olStyle);
           drawGeoms();
@@ -259,6 +271,54 @@ export class LegendRenderer {
       }
     });
   }
+
+  /**
+    * Loads the image of a style item and resolves with true if loaded, false otherwise.
+    * @param {OlStyle} styleItem the style item to load
+    * @returns {Promise<boolean>} a promise resolving to true if the image is loaded, false otherwise
+    */
+  loadStyleImage = (styleItem?: OlStyle) => new Promise((resolve) => {
+    const imgLoaded = () => resolve(true);
+    const imgNotLoaded = () => resolve(false);
+
+    const styleItemImage = styleItem?.getImage();
+    if (!styleItemImage) {
+      return imgNotLoaded();
+    }
+
+    // If image is already loaded, resolve immediately
+    if (styleItemImage.getImageState() === OlImageState.LOADED) {
+      return imgLoaded();
+    }
+
+    const img = styleItemImage.getImage(1);
+
+    // Check if img is an HTMLImageElement before adding event listeners
+    if (img instanceof HTMLImageElement) {
+      const cleanup = () => {
+        img.removeEventListener('error', onError);
+        img.removeEventListener('load', onLoad);
+      };
+
+      const onError = () => {
+        cleanup();
+        imgNotLoaded();
+      };
+      const onLoad = () => {
+        cleanup();
+        imgLoaded();
+      };
+
+      img.addEventListener('error', onError);
+      img.addEventListener('load', onLoad);
+
+      styleItemImage.load();
+    } else {
+      // If img is HTMLCanvasElement | HTMLVideoElement | ImageBitmap, just resolve as not loaded
+      // TODO handle these cases properly
+      return imgNotLoaded();
+    }
+  });
 
   /**
    * Render a single legend.
@@ -398,6 +458,7 @@ export class LegendRenderer {
       remoteLegends,
       maxColumnWidth,
       maxColumnHeight,
+      legendItemTextSize
     } = this.config;
     const legends: LegendConfiguration[] = [];
     if (styles) {
@@ -409,13 +470,8 @@ export class LegendRenderer {
       legends.unshift.apply(legends, configs);
     }
     const outputClass = format === 'svg' ? SvgOutput : PngOutput;
-    const output = new outputClass(
-      [width, height],
-      maxColumnWidth || 0,
-      maxColumnHeight || 0,
-      this.config.legendItemTextSize,
-      target
-    );
+    const output = new outputClass([width, height], maxColumnWidth || 0, maxColumnHeight || 0,
+      legendItemTextSize, target);
     const position: [number, number] = [0, 0];
     for (let i = 0; i < legends.length; i++) {
       await this.renderLegend(legends[i], output, position);

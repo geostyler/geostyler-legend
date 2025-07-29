@@ -9,28 +9,6 @@ import {
   SAMPLE_OUTPUT_FINAL_HEIGHT
 } from '../fixtures/outputs';
 
-// mock getBoundingClientRect on created DOM elements
-// (by default jsdom always return 0 so there's no way to test label shortening)
-(document as any).originalCreateElementNS = document.createElementNS;
-document.createElementNS = function(namespace: string, eltName: string) {
-  const el = (document as any).originalCreateElementNS(namespace, eltName);
-  el.getBoundingClientRect = function(): DOMRect {
-    const charCount = this.textContent.length;
-    return {
-      height: 10,
-      width: charCount * 6,
-      x: 0,
-      y: 0,
-      left: 0,
-      top: 0,
-      bottom: 0,
-      right: 0,
-      toJSON: () => ''
-    };
-  };
-  return el;
-};
-
 describe('SvgOutput', () => {
   let output: SvgOutput;
 
@@ -40,7 +18,7 @@ describe('SvgOutput', () => {
 
   describe('individual actions', () => {
     beforeEach(() => {
-      output = new SvgOutput([500, 700], undefined, undefined);
+      output = new SvgOutput([500, 700], undefined, undefined, undefined);
     });
 
     describe('#useContainer', () => {
@@ -72,9 +50,9 @@ describe('SvgOutput', () => {
     });
     describe('#addLabel', () => {
       it('inserts a label', () => {
-        output.addLabel('My Label', 100, 150);
+        output.addLabel('My Label', 100, 150, 14);
         expect(output.generate(SAMPLE_OUTPUT_FINAL_HEIGHT).innerHTML).toEqual(
-          '<text x="100" y="150">My Label</text>'
+          '<text x="100" y="150" style="font-size: 14px;">My Label</text>'
         );
       });
     });
@@ -97,7 +75,7 @@ describe('SvgOutput', () => {
 
   describe('without column constraints', () => {
     beforeEach(async () => {
-      output = new SvgOutput([500, 700], undefined, undefined);
+      output = new SvgOutput([500, 700], undefined, undefined, undefined);
       await makeSampleOutput(output);
     });
     it('generates the right output', () => {
@@ -107,7 +85,7 @@ describe('SvgOutput', () => {
 
   describe('with column constraints', () => {
     beforeEach(async () => {
-      output = new SvgOutput([500, 700], 50, 200);
+      output = new SvgOutput([500, 700], 50, 200, undefined);
       await makeSampleOutput(output);
     });
     it('generates the right output', () => {
@@ -117,7 +95,7 @@ describe('SvgOutput', () => {
 
   describe('with a height too low', () => {
     beforeEach(async () => {
-      output = new SvgOutput([500, 200], 50, 200);
+      output = new SvgOutput([500, 200], 50, 200, undefined);
       await makeSampleOutput(output);
     });
     it('sets the height on the final canvas', () => {
@@ -131,7 +109,7 @@ describe('SvgOutput', () => {
     let root: HTMLDivElement;
     beforeEach(() => {
       root = document.createElement('div');
-      output = new SvgOutput([500, 700], 250, 500, root);
+      output = new SvgOutput([500, 700], 250, 500, undefined, root);
     });
     it('appends the output to the target element', () => {
       output.generate(123);

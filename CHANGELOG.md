@@ -1,3 +1,9 @@
+## [5.1.1](https://github.com/geostyler/geostyler-legend/compare/v5.1.0...v5.1.1) (2025-07-21)
+
+### Bug Fixes
+
+* ensure style images are loaded before legend icons rendering ([cc0867d](https://github.com/geostyler/geostyler-legend/commit/cc0867ddcf8a3d1a46dbae71d9a2d79d861bb516))
+
 ## [5.1.0](https://github.com/geostyler/geostyler-legend/compare/v5.0.1...v5.1.0) (2025-07-04)
 
 ### Features
