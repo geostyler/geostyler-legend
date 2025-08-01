@@ -119,13 +119,7 @@ export default class SvgOutput extends AbstractOutput {
   generate(finalHeight: number) {
     const nodes = this.root?.selectAll('g.legend-item');
     let finalWidth = this.size[0];
-    if (typeof this.maxColumnWidth === 'number') {
-      this.shortenLabels(
-        nodes,
-        this.maxColumnWidth || 0,
-        this.legendItemTextSize
-      );
-    } else if (this.maxColumnWidth === 'fit-content') {
+    if (this.maxColumnWidth === 'fit-content') {
       const legendItemTextSize = this.legendItemTextSize;
       const textNodes = nodes?.selectAll('text');
       textNodes?.each(function () {
@@ -136,6 +130,12 @@ export default class SvgOutput extends AbstractOutput {
         finalWidth = nodeWidth > finalWidth ? nodeWidth : finalWidth;
       });
       finalWidth += 5;
+    } else {
+      this.shortenLabels(
+        nodes,
+        this.maxColumnWidth || 0,
+        this.legendItemTextSize
+      );
     }
     if (!this.maxColumnHeight) {
       this.root
