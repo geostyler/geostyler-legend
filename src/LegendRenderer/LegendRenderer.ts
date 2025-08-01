@@ -6,13 +6,7 @@ import OlGeomLineString from 'ol/geom/LineString';
 import OlImageState from 'ol/ImageState';
 import OlStyle from 'ol/style/Style';
 import Renderer from 'ol/render/canvas/Immediate';
-import {
-  isRule,
-  isSymbolizer,
-  Rule,
-  Style,
-  Symbolizer
-} from 'geostyler-style';
+import { isRule, isSymbolizer, Rule, Style, Symbolizer } from 'geostyler-style';
 import { create as createTransform } from 'ol/transform';
 import OlStyleParser from 'geostyler-openlayers-parser/dist/OlStyleParser';
 import OlFeature from 'ol/Feature';
@@ -41,7 +35,7 @@ interface LegendsConfiguration {
   remoteLegends?: RemoteLegend[];
   size: [number, number];
   maxColumnHeight?: number;
-  maxColumnWidth?: number;
+  maxColumnWidth?: number | 'fit-content';
   overflow?: 'auto' | 'group';
   hideRect?: boolean;
   iconSize?: [number, number];
@@ -54,7 +48,6 @@ const defaultIconSize: [number, number] = [45, 30];
  * A class that can be used to render legends as images.
  */
 export class LegendRenderer {
-
   config: LegendsConfiguration | null = null;
   private _iconSize: [number, number];
 
@@ -75,15 +68,15 @@ export class LegendRenderer {
   extractConfigFromStyle(style: Style) {
     const config: LegendConfiguration = {
       items: [],
-      title: ''
+      title: '',
     };
     if (style.name) {
       config.title = style.name;
     }
-    style.rules.forEach(rule => {
+    style.rules.forEach((rule) => {
       config.items.push({
         title: rule.name,
-        rule
+        rule,
       });
     });
     return config;
@@ -101,6 +94,8 @@ export class LegendRenderer {
     item: LegendItemConfiguration,
     position: [number, number],
     iconSize: [number, number],
+    autoMaxColumnWidth: number,
+    withTitle: boolean
   ) {
     if (!this.config) {
       return;
@@ -117,14 +112,42 @@ export class LegendRenderer {
       output.useContainer(item.title);
       return this.getRuleIcon(item.rule)
         .then(async (uri) => {
-          await output.addImage(uri, ...iconSize, position[0] + 1, position[1], !hideRect);
-          output.addLabel(item.title, position[0] + iconSize[0] + 5,
-            position[1] + (iconSize[1] / 2) + 5, legendItemTextSize);
-          position[1] += iconSize[1] + 5;
-          if (maxColumnHeight && position[1] + iconSize[1] + 5 >= maxColumnHeight) {
-            position[1] = 5;
-            position[0] += maxColumnWidth || 0;
+          await output.addImage(
+            uri,
+            ...iconSize,
+            position[0] + 1,
+            position[1],
+            !hideRect
+          );
+          const columnWidth = output.addLabel(
+            item.title,
+            position[0] + iconSize[0] + 5,
+            position[1] + iconSize[1] / 2 + 5,
+            legendItemTextSize
+          );
+          if (
+            columnWidth + position[0] + iconSize[0] + 5 >
+            autoMaxColumnWidth
+          ) {
+            autoMaxColumnWidth = columnWidth + position[0] + iconSize[0] + 5;
           }
+          position[1] += iconSize[1] + 5;
+          if (
+            maxColumnHeight &&
+            position[1] + iconSize[1] + 5 >= maxColumnHeight
+          ) {
+            if (withTitle) {
+              position[1] = 20;
+            } else {
+              position[1] = 5;
+            }
+            if (maxColumnWidth === 'fit-content') {
+              position[0] = autoMaxColumnWidth;
+            } else {
+              position[0] += maxColumnWidth || 0;
+            }
+          }
+          return autoMaxColumnWidth;
         })
         .catch(() => {
           return undefined;
@@ -149,16 +172,21 @@ export class LegendRenderer {
       case 'Text':
         return new OlGeomPoint([this._iconSize[0] / 2, this._iconSize[1] / 2]);
       case 'Fill':
-        return new OlGeomPolygon([[
-          [3, 3], [this._iconSize[0] - 3, 3], [this._iconSize[0] - 3, this._iconSize[1] - 3],
-          [3, this._iconSize[1] - 3], [3, 3]
-        ]]);
+        return new OlGeomPolygon([
+          [
+            [3, 3],
+            [this._iconSize[0] - 3, 3],
+            [this._iconSize[0] - 3, this._iconSize[1] - 3],
+            [3, this._iconSize[1] - 3],
+            [3, 3],
+          ],
+        ]);
       case 'Line':
         return new OlGeomLineString([
           [this._iconSize[0] / 6, this._iconSize[1] / 6],
-          [this._iconSize[0] / 3, this._iconSize[1] / 3 * 2],
+          [this._iconSize[0] / 3, (this._iconSize[1] / 3) * 2],
           [this._iconSize[0] / 2, this._iconSize[1] / 3],
-          [this._iconSize[0] / 6 * 5, this._iconSize[1] / 6 * 5]
+          [(this._iconSize[0] / 6) * 5, (this._iconSize[1] / 6) * 5],
         ]);
       case 'Raster': {
         throw new Error('Not implemented yet: "Raster" case');
@@ -180,31 +208,46 @@ export class LegendRenderer {
     const canvas = document.createElement('canvas');
     canvas.setAttribute('width', `${this._iconSize[0]}`);
     canvas.setAttribute('height', `${this._iconSize[1]}`);
-    const extent = boundingExtent([[0, 0], [this._iconSize[0], this._iconSize[1]]]);
+    const extent = boundingExtent([
+      [0, 0],
+      [this._iconSize[0], this._iconSize[1]],
+    ]);
     const pixelRatio = 1;
     const context = canvas.getContext('2d');
     const transform = createTransform();
-    const renderer = new Renderer(context as CanvasRenderingContext2D, pixelRatio, extent, transform, 0);
+    const renderer = new Renderer(
+      context as CanvasRenderingContext2D,
+      pixelRatio,
+      extent,
+      transform,
+      0
+    );
     const geoms: OlGeometry[] = [];
 
-    rule.symbolizers.forEach(symbolizer => geoms.push(this.getGeometryForSymbolizer(symbolizer)));
+    rule.symbolizers.forEach((symbolizer) =>
+      geoms.push(this.getGeometryForSymbolizer(symbolizer))
+    );
 
     const styleParser = new OlStyleParser();
 
     const style = {
       name: '',
-      rules: [{
-        name: '',
-        symbolizers: rule.symbolizers
-      }]
+      rules: [
+        {
+          name: '',
+          symbolizers: rule.symbolizers,
+        },
+      ],
     };
 
     return new Promise(async (resolve, reject) => {
-      function drawGeoms(){
+      function drawGeoms() {
         geoms.forEach((geom: OlGeometry) => renderer.drawGeometry(geom));
       }
       try {
-        let { output: olStyle, errors = [] } = await styleParser.writeStyle(style);
+        let { output: olStyle, errors = [] } = await styleParser.writeStyle(
+          style
+        );
         if (errors.length > 0) {
           reject(errors[0]);
         }
@@ -232,7 +275,7 @@ export class LegendRenderer {
         reject();
       }
     });
-  };
+  }
 
   /**
     * Loads the image of a style item and resolves with true if loaded, false otherwise.
@@ -291,7 +334,8 @@ export class LegendRenderer {
   renderLegend(
     config: LegendConfiguration,
     output: AbstractOutput,
-    position: [number, number]
+    position: [number, number],
+    autoMaxColumnWidth: number | undefined | void
   ) {
     if (!this.config) {
       return;
@@ -301,18 +345,36 @@ export class LegendRenderer {
       const legendHeight = config.items.length * (this._iconSize[1] + 5) + 20;
       // @ts-expect-error TODO fix type errors
       if (legendHeight + position[1] > this.config.maxColumnHeight) {
-      // @ts-expect-error TODO fix type errors
-        position[0] += this.config.maxColumnWidth;
+        if (typeof this.config.maxColumnWidth === 'number') {
+          position[0] +=
+            this.config.maxColumnWidth;
+        } else {
+          position[0] = typeof autoMaxColumnWidth === 'number' ? autoMaxColumnWidth + 5 : 0;
+        }
         position[1] = 0;
       }
     }
     if (config.title) {
-      output.addTitle(config.title, position[0], position[1] === 0 ? '1em': position[1] + 15);
+      output.addTitle(
+        config.title,
+        position[0],
+        position[1] === 0 ? '1em' : position[1] + 15
+      );
       position[1] += 20;
     }
-
+    // let autoMaxColumnWidth: number | undefined = 0;
     return config.items.reduce((cur, item) => {
-      return cur.then(() => this.renderLegendItem(output, item, position, this._iconSize));
+      return cur.then(async () => {
+        autoMaxColumnWidth = await this.renderLegendItem(
+          output,
+          item,
+          position,
+          this._iconSize,
+          autoMaxColumnWidth ?? 0,
+          config.title != null && config.title !== ''
+        );
+        return autoMaxColumnWidth;
+      });
     }, Promise.resolve());
   }
 
@@ -335,7 +397,9 @@ export class LegendRenderer {
       try {
         const response = await fetch(legendUrl);
         const blob = await response.blob();
-        const readBlob = async (imageBlob: Blob): Promise<string | ArrayBuffer> => {
+        const readBlob = async (
+          imageBlob: Blob
+        ): Promise<string | ArrayBuffer> => {
           return new Promise((resolve, reject) => {
             try {
               const fileReader = new FileReader();
@@ -343,9 +407,9 @@ export class LegendRenderer {
                 // @ts-expect-error TODO fix type errors
                 const result = e.target.result;
                 // @ts-expect-error TODO fix type errors
-                resolve(result) ;
+                resolve(result);
               };
-              fileReader.readAsDataURL(imageBlob) ;
+              fileReader.readAsDataURL(imageBlob);
             } catch (e) {
               reject(e);
             }
@@ -359,9 +423,12 @@ export class LegendRenderer {
 
         // @ts-expect-error TODO fix type errors
         if (this.config.overflow === 'auto' &&
-            img.height + legendSpacing + titleSpacing +
+          img.height +
+            legendSpacing +
+            titleSpacing +
             // @ts-expect-error TODO fix type errors
-            position[1] > this.config.maxColumnHeight) {
+            position[1] > this.config.maxColumnHeight
+        ) {
           // @ts-expect-error TODO fix type errors
           position[0] += this.config.maxColumnWidth;
           position[1] = 0;
@@ -372,7 +439,13 @@ export class LegendRenderer {
           output.addTitle(legendTitle, ...position);
           position[1] += titleSpacing;
         }
-        await output.addImage(base64.toString(), img.width, img.height,...position, false);
+        await output.addImage(
+          base64.toString(),
+          img.width,
+          img.height,
+          ...position,
+          false
+        );
 
         position[1] += img.height;
       } catch (err) {
@@ -383,7 +456,10 @@ export class LegendRenderer {
     }
   }
 
-  async renderAsImage(format?: 'svg' | 'png', target?: HTMLElement): Promise<Element> {
+  async renderAsImage(
+    format?: 'svg' | 'png',
+    target?: HTMLElement
+  ): Promise<Element> {
     if (!this.config) {
       return Promise.reject();
     }
@@ -398,7 +474,9 @@ export class LegendRenderer {
     } = this.config;
     const legends: LegendConfiguration[] = [];
     if (styles) {
-      styles.forEach(style => legends.push(this.extractConfigFromStyle(style)));
+      styles.forEach((style) =>
+        legends.push(this.extractConfigFromStyle(style))
+      );
     }
     if (configs) {
       legends.unshift.apply(legends, configs);
@@ -407,8 +485,9 @@ export class LegendRenderer {
     const output = new outputClass([width, height], maxColumnWidth || 0, maxColumnHeight || 0,
       legendItemTextSize, target);
     const position: [number, number] = [0, 0];
+    let autoMaxColumnWidth: number | void | undefined = 0;
     for (let i = 0; i < legends.length; i++) {
-      await this.renderLegend(legends[i], output, position);
+      autoMaxColumnWidth = await this.renderLegend(legends[i], output, position, autoMaxColumnWidth);
     }
     if (remoteLegends) {
       await this.renderImages(remoteLegends, output, position);

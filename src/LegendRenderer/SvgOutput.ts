@@ -16,19 +16,26 @@ function textToPx(text: string, legendItemTextSize: number | undefined): number 
 }
 
 export default class SvgOutput extends AbstractOutput {
-  root: Selection<SVGSVGElement, unknown, null, undefined> | null | undefined = null;
-  currentContainer: Selection<SVGGElement, unknown, null, undefined> | null | undefined = null;
+  root: Selection<SVGSVGElement, unknown, null, undefined> | null | undefined =
+    null;
+  currentContainer:
+    | Selection<SVGGElement, unknown, null, undefined>
+    | null
+    | undefined = null;
 
   constructor(
     size: [number, number],
-    maxColumnWidth: number | undefined,
+    maxColumnWidth: number | undefined | 'fit-content',
     maxColumnHeight: number | undefined,
     legendItemTextSize: number | undefined,
     target?: HTMLElement
   ) {
     super(size, maxColumnWidth || 0, maxColumnHeight || 0, legendItemTextSize);
 
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg') as SVGSVGElement;
+    const svg = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'svg'
+    ) as SVGSVGElement;
 
     this.root = select(svg)
       .attr('class', ROOT_CLASS)
@@ -46,17 +53,20 @@ export default class SvgOutput extends AbstractOutput {
   }
 
   useContainer(title: string) {
-    this.currentContainer = this.root?.append('g')
+    this.currentContainer = this.root
+      ?.append('g')
       .attr('class', 'legend-item')
       .attr('title', title);
-  };
+  }
 
   useRoot() {
     this.currentContainer = this.root;
   };
 
   addTitle(text: string, x: number | string, y: number | string) {
-    this.currentContainer?.append('g').append('text')
+    this.currentContainer
+      ?.append('g')
+      .append('text')
       .text(text)
       .attr('class', 'legend-title')
       .attr('text-anchor', 'start')
@@ -74,6 +84,7 @@ export default class SvgOutput extends AbstractOutput {
         textElement.style('font-size', legendItemTextSize + 'px');
       }
     }
+    return textToPx(text, legendItemTextSize);
   };
 
   addImage(
@@ -85,7 +96,8 @@ export default class SvgOutput extends AbstractOutput {
     drawRect: boolean
   ) {
     if (drawRect) {
-      this.currentContainer?.append('rect')
+      this.currentContainer
+        ?.append('rect')
         .attr('x', x)
         .attr('y', y)
         .attr('width', imgWidth)
@@ -93,7 +105,8 @@ export default class SvgOutput extends AbstractOutput {
         .style('fill-opacity', 0)
         .style('stroke', 'black');
     }
-    this.currentContainer?.append('svg:image')
+    this.currentContainer
+      ?.append('svg:image')
       .attr('x', x)
       .attr('y', y)
       .attr('width', imgWidth)
@@ -101,15 +114,40 @@ export default class SvgOutput extends AbstractOutput {
       .attr('href', dataUrl);
     this.root?.attr('xmlns', 'http://www.w3.org/2000/svg');
     return Promise.resolve();
-  };
+  }
 
   generate(finalHeight: number) {
     const nodes = this.root?.selectAll('g.legend-item');
-    this.shortenLabels(nodes, this.maxColumnWidth || 0, this.legendItemTextSize);
+    let finalWidth = this.size[0];
+    if (this.maxColumnWidth === 'fit-content') {
+      const legendItemTextSize = this.legendItemTextSize;
+      const textNodes = nodes?.selectAll('text');
+      textNodes?.each(function () {
+        const textNode = select(this);
+        const nodeWidth =
+          parseInt(textNode.attr('x'), 10) +
+          textToPx(textNode.text(), legendItemTextSize);
+        finalWidth = nodeWidth > finalWidth ? nodeWidth : finalWidth;
+      });
+      finalWidth += 5;
+    } else {
+      this.shortenLabels(
+        nodes,
+        this.maxColumnWidth || 0,
+        this.legendItemTextSize
+      );
+    }
     if (!this.maxColumnHeight) {
       this.root
-        ?.attr('viewBox', `0 0 ${this.size[0]} ${finalHeight}`)
+        ?.attr('viewBox', `0 0 ${finalWidth} ${finalHeight}`)
+        .attr('width', finalWidth)
         .attr('height', finalHeight);
+    }
+    if (this.maxColumnWidth === 'fit-content') {
+      this.root
+        ?.attr('viewBox', `0 0 ${finalWidth} ${this.maxColumnHeight}`)
+        .attr('width', finalWidth)
+        .attr('height', this.maxColumnHeight);
     }
     return this.root?.node() as SVGElement;
   }
