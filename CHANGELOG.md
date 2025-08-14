@@ -1,3 +1,16 @@
+## [5.2.0](https://github.com/geostyler/geostyler-legend/compare/v5.1.1...v5.2.0) (2025-08-14)
+
+### Features
+
+* fit content column width ([#508](https://github.com/geostyler/geostyler-legend/issues/508)) ([ad328c2](https://github.com/geostyler/geostyler-legend/commit/ad328c2f049632b50f8e32e672f6e60b91321b58))
+
+### Bug Fixes
+
+* **legend-item-ellipsis:** fix minor code to improve quality ([dee9705](https://github.com/geostyler/geostyler-legend/commit/dee97050bc5d8031166e8f3dc4313c012fa5bcb9))
+* **legend-item-font-size:** update README with the new param ([070c091](https://github.com/geostyler/geostyler-legend/commit/070c0917ffbdddcca71d2f4dfef282b09d662049))
+* **legend-item-overflow:** edit tests to match with additions ([7de42e8](https://github.com/geostyler/geostyler-legend/commit/7de42e8db66b11cd7c227e33d55a9c216bd311b9))
+* **legend-item-overflow:** implement legend item overflow ([7d40e3f](https://github.com/geostyler/geostyler-legend/commit/7d40e3fd460036e45d62baf91184a1b662be6de1))
+
 ## [5.1.1](https://github.com/geostyler/geostyler-legend/compare/v5.1.0...v5.1.1) (2025-07-21)
 
 ### Bug Fixes
