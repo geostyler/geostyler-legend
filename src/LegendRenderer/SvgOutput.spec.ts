@@ -1,4 +1,4 @@
-/* eslint-env jest */
+/* global describe, it -- Globals defined by jest */
 
 import SvgOutput from './SvgOutput';
 import { beforeEach, describe, expect, it } from 'vitest';
