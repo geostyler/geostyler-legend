@@ -1,4 +1,4 @@
-/* eslint-env jest */
+/* global describe, it -- Globals defined by jest */
 
 import LegendRenderer from './LegendRenderer';
 import AbstractOutput from './AbstractOutput';
