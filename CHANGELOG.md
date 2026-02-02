@@ -1,3 +1,9 @@
+## [5.2.1](https://github.com/geostyler/geostyler-legend/compare/v5.2.0...v5.2.1) (2026-02-02)
+
+### Bug Fixes
+
+* add trusted publisher workflow and update dependencies ([#515](https://github.com/geostyler/geostyler-legend/issues/515)) ([4c852bb](https://github.com/geostyler/geostyler-legend/commit/4c852bbaf62f9fb4a9088ab302c53e83507a3334))
+
 ## [5.2.0](https://github.com/geostyler/geostyler-legend/compare/v5.1.1...v5.2.0) (2025-08-14)
 
 ### Features
