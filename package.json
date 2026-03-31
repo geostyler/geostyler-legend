@@ -48,7 +48,7 @@
     "@typescript-eslint/parser": "^8.54.0",
     "@vitejs/plugin-react": "^4.7.0",
     "@vitest/coverage-istanbul": "^3.2.4",
-    "canvas": "3.1.0",
+    "canvas": "3.2.3",
     "conventional-changelog-conventionalcommits": "^9.1.0",
     "d3": "^7.9.0",
     "eslint": "^9.39.2",
