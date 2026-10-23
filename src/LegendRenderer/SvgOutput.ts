@@ -14,12 +14,14 @@ function textToPx(text: string, legendItemTextSize: number | undefined): number 
   }
   return 0;
 }
+type SvgContainer = Selection<SVGSVGElement | SVGGElement, unknown, null, undefined>;
 
 export default class SvgOutput extends AbstractOutput {
+
   root: Selection<SVGSVGElement, unknown, null, undefined> | null | undefined =
     null;
   currentContainer:
-    | Selection<SVGGElement, unknown, null, undefined>
+    | SvgContainer
     | null
     | undefined = null;
 
@@ -44,7 +46,7 @@ export default class SvgOutput extends AbstractOutput {
       .attr('left', 0)
       .attr('width', size[0])
       .attr('height', size[1]);
-    this.currentContainer = this.root;
+    this.currentContainer = select<SVGSVGElement | SVGGElement, unknown>(svg);
 
     if (target) {
       select(target).select(`.${ROOT_CLASS}`).remove();
@@ -60,7 +62,8 @@ export default class SvgOutput extends AbstractOutput {
   }
 
   useRoot() {
-    this.currentContainer = this.root;
+    const svg = this.root?.node();
+    this.currentContainer = svg ? select<SVGSVGElement | SVGGElement, unknown>(svg) : null;
   };
 
   addTitle(text: string, x: number | string, y: number | string) {
