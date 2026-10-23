@@ -481,7 +481,8 @@ export class LegendRenderer {
       );
     }
     if (configs) {
-      legends.unshift.apply(legends, configs);
+      const legendsFromConfig: LegendConfiguration[] = [{ items: configs, title: '' }];
+      legends.unshift.apply(legends, legendsFromConfig);
     }
     const outputClass = format === 'svg' ? SvgOutput : PngOutput;
     const output = new outputClass([width, height], maxColumnWidth || 0, maxColumnHeight || 0,
