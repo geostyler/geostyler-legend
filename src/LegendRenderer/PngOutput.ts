@@ -29,7 +29,9 @@ export default class PngOutput extends AbstractOutput {
     private target?: HTMLElement,
   ) {
     super(size, maxColumnWidth, maxColumnHeight, legendItemTextSize);
-    this.createCanvas(...size);
+    this.canvas = this.createCanvas(...size);
+    this.context = this.createContext(this.canvas);
+    this.attachToTarget();
   }
 
   useContainer(title: string) {}
@@ -74,18 +76,28 @@ export default class PngOutput extends AbstractOutput {
     return this.canvas;
   }
 
-  private createCanvas(width: number, height: number) {
-    this.canvas = document.createElement('canvas');
-    this.canvas.className = ROOT_CLASS;
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
-    this.context.font = '14px sans-serif';
-
+  private attachToTarget() {
     if (this.target) {
       this.target.querySelectorAll(`.${ROOT_CLASS}`).forEach(e => e.remove());
       this.target.append(this.canvas);
     }
+  }
+
+  private createCanvas(width: number, height: number): HTMLCanvasElement {
+    const canvas = document.createElement('canvas');
+    canvas.className = ROOT_CLASS;
+    canvas.width = width;
+    canvas.height = height;
+    return canvas;
+  }
+
+  private createContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Canvas 2D context is not available');
+    }
+    context.font = '14px sans-serif';
+    return context;
   }
 
   private expandHeight(newHeight: number) {
