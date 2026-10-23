@@ -106,7 +106,7 @@ describe('LegendRenderer', () => {
           kind: 'Icon'
         }]
       },
-    }, [0, 0], [45, 30]);
+    }, [0, 0], [45, 30], 0, false);
     expect(returnValue).toBeUndefined();
   });
 
@@ -124,7 +124,7 @@ describe('LegendRenderer', () => {
           wellKnownName: 'circle'
         }]
       }
-    }, [0, 0], [45, 30]);
+    }, [0, 0], [45, 30], 0, false);
     expect(output.useContainer).toHaveBeenCalledWith('Example');
     expect(output.addLabel).toHaveBeenCalledWith('Example', 50, (30 / 2) + 5, undefined);
   });
