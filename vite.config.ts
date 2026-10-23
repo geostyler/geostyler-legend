@@ -16,7 +16,6 @@ export default defineConfig({
       output: {
         dir: 'dist',
         exports: 'named',
-        generatedCode: 'es5',
         format: 'iife',
       },
     },
