@@ -88,6 +88,8 @@ export class LegendRenderer {
    * @param {LegendItemConfiguration} item configuration of the legend item
    * @param {[number, number]} position the current position
    * @param {[number, number]} iconSize the icon size defined in config
+   * @param {number} autoMaxColumnWidth the max width of column. The value must be 0 if you don't want to use it
+   * @param {boolean} withTitle To choose if you want to display legend title
    */
   renderLegendItem(
     output: AbstractOutput,
@@ -330,8 +332,9 @@ export class LegendRenderer {
    * @param {LegendConfiguration} config the legend config
    * @param {AbstractOutput} output
    * @param {[number, number]} position the current position
+   * @param {number | undefined | void} autoMaxColumnWidth the max width of column
    */
-  renderLegend(
+  async renderLegend(
     config: LegendConfiguration,
     output: AbstractOutput,
     position: [number, number],
@@ -363,19 +366,18 @@ export class LegendRenderer {
       position[1] += 20;
     }
     // let autoMaxColumnWidth: number | undefined = 0;
-    return config.items.reduce((cur, item) => {
-      return cur.then(async () => {
-        autoMaxColumnWidth = await this.renderLegendItem(
-          output,
-          item,
-          position,
-          this._iconSize,
-          autoMaxColumnWidth ?? 0,
-          config.title != null && config.title !== ''
-        );
-        return autoMaxColumnWidth;
-      });
-    }, Promise.resolve());
+    const hasTitle = config.title != null && config.title !== '';
+    for (const item of config.items) {
+      autoMaxColumnWidth = await this.renderLegendItem(
+        output,
+        item,
+        position,
+        this._iconSize,
+        autoMaxColumnWidth ?? 0,
+        hasTitle
+      );
+    }
+    return autoMaxColumnWidth;
   }
 
   /**
