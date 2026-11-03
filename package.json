@@ -53,7 +53,7 @@
     "canvas": "3.2.3",
     "conventional-changelog-conventionalcommits": "^10.4.1",
     "d3": "^7.9.0",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "extensionless": "^2.0.6",
