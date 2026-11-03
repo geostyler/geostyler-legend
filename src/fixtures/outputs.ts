@@ -58,7 +58,7 @@ export const SAMPLE_PNG_EVENTS = [
   },
   {
     'props': {
-      'maxWidth': null as number,
+      'maxWidth': null,
       'text': 'Inside a container',
       'x': 180,
       'y': 180

@@ -14,12 +14,7 @@ export default defineConfig({
       provider: 'istanbul',
       reporter: ['text', 'html', 'clover', 'json', 'lcov']
     },
-    poolOptions: {
-      threads: {
-        minThreads: 1,
-        maxThreads: 1
-      },
-    },
+    maxWorkers: 1,
     globals: true,
     environment: 'jsdom',
     environmentOptions: {

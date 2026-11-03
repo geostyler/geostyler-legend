@@ -12,6 +12,13 @@ import {
 describe('SvgOutput', () => {
   let output: SvgOutput;
 
+  // jsdom@30 fix font size to 16px.
+  // Here we fix the font size in tests.
+  beforeEach(() => {
+    document.body.style.fontSize = '10px';
+    document.body.style.fontFamily = 'sans-serif';
+  });
+
   it('is defined', () => {
     expect(SvgOutput).not.toBeUndefined();
   });
